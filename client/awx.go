@@ -27,6 +27,7 @@ type AWX struct {
 	CredentialInputSourceService          *CredentialInputSourceService
 	InventorySourcesService               *InventorySourcesService
 	InventoryGroupService                 *InventoryGroupService
+	NotificationTemplatesService          *NotificationTemplatesService
 	OrganizationsService                  *OrganizationsService
 	ScheduleService                       *SchedulesService
 	SettingService                        *SettingService
@@ -124,6 +125,9 @@ func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error)
 			client: awxClient,
 		},
 		InventoryGroupService: &InventoryGroupService{
+			client: awxClient,
+		},
+		NotificationTemplatesService: &NotificationTemplatesService{
 			client: awxClient,
 		},
 		OrganizationsService: &OrganizationsService{

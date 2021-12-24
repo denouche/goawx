@@ -11,7 +11,7 @@ type SchedulesService struct {
 	client *Client
 }
 
-// ListSchedulesResponse represents `ListProjects` endpoint response.
+// ListSchedulesResponse represents `List` endpoint response.
 type ListSchedulesResponse struct {
 	Pagination
 	Results []*Schedule `json:"results"`

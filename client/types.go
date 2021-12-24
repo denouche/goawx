@@ -821,3 +821,12 @@ type Schedule struct {
 	UnifiedJobTemplate int    `json:"unified_job_template"`
 	Inventory          int    `json:"inventory"`
 }
+
+type NotificationTemplate struct {
+	ID                        int                    `json:"id"`
+	Name                      string                 `json:"name"`
+	Description               string                 `json:"description"`
+	Organization              string                 `json:"organization"`
+	NotificationType          string                 `json:"notification_type"`
+	NotificationConfiguration map[string]interface{} `json:"notification_configuration"`
+}
