@@ -13,31 +13,33 @@ var mandatoryFields []string
 type AWX struct {
 	client *Client
 
-	PingService                           *PingService
-	InventoriesService                    *InventoriesService
-	JobService                            *JobService
-	JobTemplateService                    *JobTemplateService
-	ProjectService                        *ProjectService
-	ProjectUpdatesService                 *ProjectUpdatesService
-	UserService                           *UserService
-	GroupService                          *GroupService
-	HostService                           *HostService
-	CredentialsService                    *CredentialsService
-	CredentialTypeService                 *CredentialTypeService
-	CredentialInputSourceService          *CredentialInputSourceService
-	InventorySourcesService               *InventorySourcesService
-	InventoryGroupService                 *InventoryGroupService
-	NotificationTemplatesService          *NotificationTemplatesService
-	OrganizationsService                  *OrganizationsService
-	ScheduleService                       *SchedulesService
-	SettingService                        *SettingService
-	TeamService                           *TeamService
-	WorkflowJobTemplateScheduleService    *WorkflowJobTemplateScheduleService
-	WorkflowJobTemplateService            *WorkflowJobTemplateService
-	WorkflowJobTemplateNodeService        *WorkflowJobTemplateNodeService
-	WorkflowJobTemplateNodeAllwaysService *WorkflowJobTemplateNodeStepService
-	WorkflowJobTemplateNodeFailureService *WorkflowJobTemplateNodeStepService
-	WorkflowJobTemplateNodeSuccessService *WorkflowJobTemplateNodeStepService
+	PingService                                     *PingService
+	InventoriesService                              *InventoriesService
+	JobService                                      *JobService
+	JobTemplateService                              *JobTemplateService
+	JobTemplateNotificationTemplatesService         *JobTemplateNotificationTemplatesService
+	ProjectService                                  *ProjectService
+	ProjectUpdatesService                           *ProjectUpdatesService
+	UserService                                     *UserService
+	GroupService                                    *GroupService
+	HostService                                     *HostService
+	CredentialsService                              *CredentialsService
+	CredentialTypeService                           *CredentialTypeService
+	CredentialInputSourceService                    *CredentialInputSourceService
+	InventorySourcesService                         *InventorySourcesService
+	InventoryGroupService                           *InventoryGroupService
+	NotificationTemplatesService                    *NotificationTemplatesService
+	OrganizationsService                            *OrganizationsService
+	ScheduleService                                 *SchedulesService
+	SettingService                                  *SettingService
+	TeamService                                     *TeamService
+	WorkflowJobTemplateScheduleService              *WorkflowJobTemplateScheduleService
+	WorkflowJobTemplateService                      *WorkflowJobTemplateService
+	WorkflowJobTemplateNodeService                  *WorkflowJobTemplateNodeService
+	WorkflowJobTemplateNodeAllwaysService           *WorkflowJobTemplateNodeStepService
+	WorkflowJobTemplateNodeFailureService           *WorkflowJobTemplateNodeStepService
+	WorkflowJobTemplateNodeSuccessService           *WorkflowJobTemplateNodeStepService
+	WorkflowJobTemplateNotificationTemplatesService *WorkflowJobTemplateNotificationTemplatesService
 }
 
 // Client implement http client.
@@ -95,6 +97,9 @@ func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error)
 			client: awxClient,
 		},
 		JobTemplateService: &JobTemplateService{
+			client: awxClient,
+		},
+		JobTemplateNotificationTemplatesService: &JobTemplateNotificationTemplatesService{
 			client: awxClient,
 		},
 		ProjectService: &ProjectService{
@@ -162,6 +167,9 @@ func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error)
 		WorkflowJobTemplateNodeAllwaysService: &WorkflowJobTemplateNodeStepService{
 			endpoint: fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/allways_nodes/"),
 			client:   awxClient,
+		},
+		WorkflowJobTemplateNotificationTemplatesService: &WorkflowJobTemplateNotificationTemplatesService{
+			client: awxClient,
 		},
 	}
 
