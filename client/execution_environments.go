@@ -52,7 +52,7 @@ func (p *ExecutionEnvironmentsService) GetExecutionEnvironmentByID(id int, param
 
 // CreateExecutionEnvironment creates an awx ExecutionEnvironment.
 func (p *ExecutionEnvironmentsService) CreateExecutionEnvironment(data map[string]interface{}, params map[string]string) (*ExecutionEnvironment, error) {
-	mandatoryFields = []string{"name"}
+	mandatoryFields = []string{"name", "image"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
 	if !status {
