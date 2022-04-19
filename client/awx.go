@@ -13,6 +13,7 @@ var mandatoryFields []string
 type AWX struct {
 	client *Client
 
+	ExecutionEnvironmentsService                    *ExecutionEnvironmentsService
 	PingService                                     *PingService
 	InventoriesService                              *InventoriesService
 	JobService                                      *JobService
@@ -87,6 +88,9 @@ func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error)
 	newAWX := &AWX{
 		client: awxClient,
 
+		ExecutionEnvironmentsService: &ExecutionEnvironmentsService{
+			client: awxClient,
+		},
 		PingService: &PingService{
 			client: awxClient,
 		},
