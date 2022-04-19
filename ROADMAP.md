@@ -43,3 +43,4 @@
 - [ ] Support WorkflowJobs endpoints;
 - [X] Support WorkflowJobTemplateNodes endpoints;
 - [ ] Support WorkflowJobNodes endpoints;
+- [x] Support Execution Environments endpoints;

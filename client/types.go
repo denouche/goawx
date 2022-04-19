@@ -81,6 +81,16 @@ type Related struct {
 	AdHocCommandEvents           string `json:"ad_hoc_command_events"`
 	Children                     string `json:"children"`
 	AnsibleFacts                 string `json:"ansible_facts"`
+	ExecutionEnvironment         string `json:"execution_environment"`
+	ExecutionEnvironments        string `json:"execution_environments"`
+}
+
+// InstanceGroupSummary represents the awx api instance group summary fields.
+type ExecutionEnvironmentSummary struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
 }
 
 // OrganizationSummary represents the awx api organization summary fields.
@@ -121,12 +131,13 @@ type ApplyRole struct {
 
 // ObjectRoles represents the awx api object roles.
 type ObjectRoles struct {
-	UseRole     *ApplyRole `json:"use_role"`
-	AdminRole   *ApplyRole `json:"admin_role"`
-	AdhocRole   *ApplyRole `json:"adhoc_role"`
-	UpdateRole  *ApplyRole `json:"update_role"`
-	ReadRole    *ApplyRole `json:"read_role"`
-	ExecuteRole *ApplyRole `json:"execute_role"`
+	UseRole                      *ApplyRole `json:"use_role"`
+	AdminRole                    *ApplyRole `json:"admin_role"`
+	AdhocRole                    *ApplyRole `json:"adhoc_role"`
+	UpdateRole                   *ApplyRole `json:"update_role"`
+	ReadRole                     *ApplyRole `json:"read_role"`
+	ExecuteRole                  *ApplyRole `json:"execute_role"`
+	ExecuteEnvironmentsAdminRole *ApplyRole `json:"execution_environment_admin_role"`
 }
 
 // UserCapabilities represents the awx api user capabilities.
@@ -147,26 +158,27 @@ type Labels struct {
 
 // Summary represents the awx api summary fields.
 type Summary struct {
-	InstanceGroup      *InstanceGroupSummary  `json:"instance_group"`
-	Organization       *OrganizationSummary   `json:"organization"`
-	CreatedBy          *ByUserSummary         `json:"created_by"`
-	ModifiedBy         *ByUserSummary         `json:"modified_by"`
-	ObjectRoles        *ObjectRoles           `json:"object_roles"`
-	UserCapabilities   *UserCapabilities      `json:"user_capabilities"`
-	Project            *Project               `json:"project"`
-	LastJob            map[string]interface{} `json:"last_job"`
-	CurrentJob         map[string]interface{} `json:"current_job"`
-	LastUpdate         map[string]interface{} `json:"last_update"`
-	Inventory          *Inventory             `json:"inventory"`
-	RecentJobs         []interface{}          `json:"recent_jobs"`
-	Groups             *Groups                `json:"groups"`
-	Credentials        []Credential           `json:"credentials"`
-	Credential         *Credential            `json:"credential"`
-	Labels             *Labels                `json:"labels"`
-	JobTemplate        *JobTemplateSummary    `json:"job_template"`
-	UnifiedJobTemplate *UnifiedJobTemplate    `json:"unified_job_template"`
-	ExtraCredentials   []interface{}          `json:"extra_credentials"`
-	ProjectUpdate      *ProjectUpdate         `json:"project_update"`
+	InstanceGroup               *InstanceGroupSummary        `json:"instance_group"`
+	Organization                *OrganizationSummary         `json:"organization"`
+	CreatedBy                   *ByUserSummary               `json:"created_by"`
+	ModifiedBy                  *ByUserSummary               `json:"modified_by"`
+	ObjectRoles                 *ObjectRoles                 `json:"object_roles"`
+	UserCapabilities            *UserCapabilities            `json:"user_capabilities"`
+	Project                     *Project                     `json:"project"`
+	LastJob                     map[string]interface{}       `json:"last_job"`
+	CurrentJob                  map[string]interface{}       `json:"current_job"`
+	LastUpdate                  map[string]interface{}       `json:"last_update"`
+	Inventory                   *Inventory                   `json:"inventory"`
+	RecentJobs                  []interface{}                `json:"recent_jobs"`
+	Groups                      *Groups                      `json:"groups"`
+	Credentials                 []Credential                 `json:"credentials"`
+	Credential                  *Credential                  `json:"credential"`
+	Labels                      *Labels                      `json:"labels"`
+	JobTemplate                 *JobTemplateSummary          `json:"job_template"`
+	UnifiedJobTemplate          *UnifiedJobTemplate          `json:"unified_job_template"`
+	ExtraCredentials            []interface{}                `json:"extra_credentials"`
+	ProjectUpdate               *ProjectUpdate               `json:"project_update"`
+	ExecutionEnvironmentSummary *ExecutionEnvironmentSummary `json:"execution_environment"`
 }
 
 // ProjectUpdate represents the awx api project update.
@@ -359,6 +371,7 @@ type JobTemplate struct {
 	CustomVirtualenv      interface{} `json:"custom_virtualenv"`
 	Credential            int         `json:"credential"`
 	VaultCredential       interface{} `json:"vault_credential"`
+	ExecutionEnvironment  int         `json:"execution_environment"`
 }
 
 // JobLaunch represents the awx api job launch.
@@ -727,6 +740,7 @@ type InventorySource struct {
 	ID                    int         `json:"id"`
 	EnabledVar            string      `json:"enabled_var"`
 	EnabledValue          string      `json:"enabled_value"`
+	ExecutionEnvironment  int         `json:"execution_environment"`
 	InstanceFilters       string      `json:"instance_filters"`
 	HostFilter            string      `json:"host_filter"`
 	Inventory             int         `json:"inventory"`
@@ -829,4 +843,21 @@ type NotificationTemplate struct {
 	Organization              string                 `json:"organization"`
 	NotificationType          string                 `json:"notification_type"`
 	NotificationConfiguration map[string]interface{} `json:"notification_configuration"`
+}
+
+type ExecutionEnvironment struct {
+	ID            int       `json:"id"`
+	Type          string    `json:"type"`
+	URL           string    `json:"url"`
+	Related       *Related  `json:"related"`
+	SummaryFields *Summary  `json:"summary_fields"`
+	Created       time.Time `json:"created"`
+	Modified      time.Time `json:"modified"`
+	Name          string    `json:"name"`
+	Description   string    `json:"description"`
+	Organization  int       `json:"organization"`
+	Image         string    `json:"image"`
+	Managed       bool      `json:"managed"`
+	Credential    int       `json:"credential"`
+	Pull          string    `json:"pull"`
 }
