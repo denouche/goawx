@@ -20,18 +20,36 @@ type ListOrganizationsResponse struct {
 const organizationsAPIEndpoint = "/api/v2/organizations/"
 
 // ListOrganizations shows list of awx organizations.
-func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*Organizations, *ListOrganizationsResponse, error) {
-	result := new(ListOrganizationsResponse)
-	resp, err := p.client.Requester.GetJSON(organizationsAPIEndpoint, result, params)
+func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*Organizations, error) {
+	results, err := p.getAllPages(organizationsAPIEndpoint, params)
 	if err != nil {
-		return nil, result, err
+		return nil, err
 	}
+	return results, nil
+}
 
-	if err := CheckResponse(resp); err != nil {
-		return nil, result, err
+func (p *OrganizationsService) getAllPages(firstURL string, params map[string]string) ([]*Organizations, error) {
+	results := make([]*Organizations, 0)
+	nextURL := firstURL
+	for {
+		result := new(ListOrganizationsResponse)
+		resp, err := p.client.Requester.GetJSON(nextURL, result, params)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := CheckResponse(resp); err != nil {
+			return nil, err
+		}
+
+		results = append(results, result.Results...)
+
+		if result.Next == nil || result.Next.(string) == "" {
+			break
+		}
+		nextURL = result.Next.(string)
 	}
-
-	return result.Results, result, nil
+	return results, nil
 }
 
 // GetOrganizationsByID shows the details of a Organization.
