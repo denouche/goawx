@@ -696,7 +696,7 @@ type Host struct {
 	AnsibleFactsModified interface{}  `json:"ansible_facts_modified"`
 }
 
-type Organizations struct {
+type Organization struct {
 	Created          time.Time `json:"created"`
 	CustomVirtualenv string    `json:"custom_virtualenv"`
 	Description      string    `json:"description"`

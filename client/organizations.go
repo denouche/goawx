@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
 // OrganizationsService implements awx organizations apis.
@@ -14,13 +15,13 @@ type OrganizationsService struct {
 // ListOrganizationsResponse represents `ListOrganizations` endpoint response.
 type ListOrganizationsResponse struct {
 	Pagination
-	Results []*Organizations `json:"results"`
+	Results []*Organization `json:"results"`
 }
 
 const organizationsAPIEndpoint = "/api/v2/organizations/"
 
 // ListOrganizations shows list of awx organizations.
-func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*Organizations, error) {
+func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*Organization, error) {
 	results, err := p.getAllPages(organizationsAPIEndpoint, params)
 	if err != nil {
 		return nil, err
@@ -28,12 +29,25 @@ func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*O
 	return results, nil
 }
 
-func (p *OrganizationsService) getAllPages(firstURL string, params map[string]string) ([]*Organizations, error) {
-	results := make([]*Organizations, 0)
+func (p *OrganizationsService) getAllPages(firstURL string, params map[string]string) ([]*Organization, error) {
+	results := make([]*Organization, 0)
 	nextURL := firstURL
 	for {
+		nextURLParsed, err := url.Parse(nextURL)
+
+		nextURLQueryParams := make(map[string]string)
+		for paramName, paramValues := range nextURLParsed.Query() {
+			if paramValues != nil && len(paramValues) > 0 {
+				nextURLQueryParams[paramName] = paramValues[0]
+			}
+		}
+
+		for paramName, paramValue := range params {
+			nextURLQueryParams[paramName] = paramValue
+		}
+
 		result := new(ListOrganizationsResponse)
-		resp, err := p.client.Requester.GetJSON(nextURL, result, params)
+		resp, err := p.client.Requester.GetJSON(nextURLParsed.Path, result, nextURLQueryParams)
 		if err != nil {
 			return nil, err
 		}
@@ -48,13 +62,14 @@ func (p *OrganizationsService) getAllPages(firstURL string, params map[string]st
 			break
 		}
 		nextURL = result.Next.(string)
+
 	}
 	return results, nil
 }
 
 // GetOrganizationsByID shows the details of a Organization.
-func (p *OrganizationsService) GetOrganizationsByID(id int, params map[string]string) (*Organizations, error) {
-	result := new(Organizations)
+func (p *OrganizationsService) GetOrganizationsByID(id int, params map[string]string) (*Organization, error) {
+	result := new(Organization)
 	endpoint := fmt.Sprintf("%s%d/", organizationsAPIEndpoint, id)
 	resp, err := p.client.Requester.GetJSON(endpoint, result, params)
 	if err != nil {
@@ -69,7 +84,7 @@ func (p *OrganizationsService) GetOrganizationsByID(id int, params map[string]st
 }
 
 // CreateOrganization creates an awx Organization.
-func (p *OrganizationsService) CreateOrganization(data map[string]interface{}, params map[string]string) (*Organizations, error) {
+func (p *OrganizationsService) CreateOrganization(data map[string]interface{}, params map[string]string) (*Organization, error) {
 	mandatoryFields = []string{"name"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -78,7 +93,7 @@ func (p *OrganizationsService) CreateOrganization(data map[string]interface{}, p
 		return nil, err
 	}
 
-	result := new(Organizations)
+	result := new(Organization)
 	payload, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -96,8 +111,8 @@ func (p *OrganizationsService) CreateOrganization(data map[string]interface{}, p
 }
 
 // UpdateOrganization update an awx Organization.
-func (p *OrganizationsService) UpdateOrganization(id int, data map[string]interface{}, params map[string]string) (*Organizations, error) {
-	result := new(Organizations)
+func (p *OrganizationsService) UpdateOrganization(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+	result := new(Organization)
 	endpoint := fmt.Sprintf("%s%d", organizationsAPIEndpoint, id)
 	payload, err := json.Marshal(data)
 	if err != nil {
@@ -116,8 +131,8 @@ func (p *OrganizationsService) UpdateOrganization(id int, data map[string]interf
 }
 
 // DeleteOrganization delete an awx Organization.
-func (p *OrganizationsService) DeleteOrganization(id int) (*Organizations, error) {
-	result := new(Organizations)
+func (p *OrganizationsService) DeleteOrganization(id int) (*Organization, error) {
+	result := new(Organization)
 	endpoint := fmt.Sprintf("%s%d", organizationsAPIEndpoint, id)
 
 	resp, err := p.client.Requester.Delete(endpoint, result, nil)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
 type CredentialsService struct {
@@ -17,21 +18,50 @@ type ListCredentialsResponse struct {
 
 const credentialsAPIEndpoint = "/api/v2/credentials/"
 
-func (cs *CredentialsService) ListCredentials(params map[string]string) ([]*Credential,
-	*ListCredentialsResponse,
-	error) {
-	result := new(ListCredentialsResponse)
-	resp, err := cs.client.Requester.GetJSON(credentialsAPIEndpoint, result, params)
+func (cs *CredentialsService) ListCredentials(params map[string]string) ([]*Credential, error) {
+	results, err := cs.getAllPages(organizationsAPIEndpoint, params)
 	if err != nil {
-		return nil, result, err
+		return nil, err
 	}
+	return results, nil
+}
 
-	err = CheckResponse(resp)
-	if err != nil {
-		return nil, result, err
+func (cs *CredentialsService) getAllPages(firstURL string, params map[string]string) ([]*Credential, error) {
+	results := make([]*Credential, 0)
+	nextURL := firstURL
+	for {
+		nextURLParsed, err := url.Parse(nextURL)
+
+		nextURLQueryParams := make(map[string]string)
+		for paramName, paramValues := range nextURLParsed.Query() {
+			if paramValues != nil && len(paramValues) > 0 {
+				nextURLQueryParams[paramName] = paramValues[0]
+			}
+		}
+
+		for paramName, paramValue := range params {
+			nextURLQueryParams[paramName] = paramValue
+		}
+
+		result := new(ListCredentialsResponse)
+		resp, err := cs.client.Requester.GetJSON(nextURLParsed.Path, result, nextURLQueryParams)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := CheckResponse(resp); err != nil {
+			return nil, err
+		}
+
+		results = append(results, result.Results...)
+
+		if result.Next == nil || result.Next.(string) == "" {
+			break
+		}
+		nextURL = result.Next.(string)
+
 	}
-
-	return result.Results, result, nil
+	return results, nil
 }
 
 func (cs *CredentialsService) CreateCredentials(data map[string]interface{}, params map[string]string) (*Credential, error) {
