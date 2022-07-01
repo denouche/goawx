@@ -37,7 +37,7 @@ type AWX struct {
 	WorkflowJobTemplateScheduleService              *WorkflowJobTemplateScheduleService
 	WorkflowJobTemplateService                      *WorkflowJobTemplateService
 	WorkflowJobTemplateNodeService                  *WorkflowJobTemplateNodeService
-	WorkflowJobTemplateNodeAllwaysService           *WorkflowJobTemplateNodeStepService
+	WorkflowJobTemplateNodeAlwaysService            *WorkflowJobTemplateNodeStepService
 	WorkflowJobTemplateNodeFailureService           *WorkflowJobTemplateNodeStepService
 	WorkflowJobTemplateNodeSuccessService           *WorkflowJobTemplateNodeStepService
 	WorkflowJobTemplateNotificationTemplatesService *WorkflowJobTemplateNotificationTemplatesService
@@ -168,8 +168,8 @@ func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error)
 			endpoint: fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/failure_nodes/"),
 			client:   awxClient,
 		},
-		WorkflowJobTemplateNodeAllwaysService: &WorkflowJobTemplateNodeStepService{
-			endpoint: fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/allways_nodes/"),
+		WorkflowJobTemplateNodeAlwaysService: &WorkflowJobTemplateNodeStepService{
+			endpoint: fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/always_nodes/"),
 			client:   awxClient,
 		},
 		WorkflowJobTemplateNotificationTemplatesService: &WorkflowJobTemplateNotificationTemplatesService{
