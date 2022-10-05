@@ -319,6 +319,7 @@ type InstanceGroup struct {
 	ID               int      `json:"id"`
 	Instances        []string `json:"instances"`
 	Capacity         int      `json:"capacity"`
+	CredentialId     int      `json:"credential_id"`
 	Name             string   `json:"name"`
 	IsContainerGroup bool     `json:"is_container_group"`
 	PodSpecOverride  string   `json:"pod_spec_override"`

@@ -34,9 +34,9 @@ func (p *InstanceGroupsService) ListInstanceGroups(params map[string]string) ([]
 	return result.Results, result, nil
 }
 
-// GetExecutionEnvironmentByID shows the details of a ExecutionEnvironment.
-func (p *InstanceGroupsService) GetInstanceGroupByID(id int, params map[string]string) (*ExecutionEnvironment, error) {
-	result := new(ExecutionEnvironment)
+// GetInstanceGroupByID shows the details of a InstanceGroup.
+func (p *InstanceGroupsService) GetInstanceGroupByID(id int, params map[string]string) (*InstanceGroup, error) {
+	result := new(InstanceGroup)
 	endpoint := fmt.Sprintf("%s%d/", InstanceGroupsAPIEndpoint, id)
 	resp, err := p.client.Requester.GetJSON(endpoint, result, params)
 	if err != nil {
@@ -50,7 +50,7 @@ func (p *InstanceGroupsService) GetInstanceGroupByID(id int, params map[string]s
 	return result, nil
 }
 
-// CreateExecutionEnvironment creates an awx ExecutionEnvironment.
+// CreateInstanceGroup creates an awx InstanceGroup.
 func (p *InstanceGroupsService) CreateInstanceGroup(data map[string]interface{}, params map[string]string) (*InstanceGroup, error) {
 	mandatoryFields = []string{"name"}
 	validate, status := ValidateParams(data, mandatoryFields)
