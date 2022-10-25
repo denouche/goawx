@@ -54,7 +54,7 @@ type TokenAuth struct {
 }
 
 func (ta *TokenAuth) addAuthenticationHeaders(r *http.Request) {
-	r.Header.Set("Authentication", fmt.Sprintf("Bearer %s", ta.Token))
+	r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", ta.Token))
 }
 
 // Requester implemented a base http client.
