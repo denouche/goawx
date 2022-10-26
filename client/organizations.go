@@ -29,46 +29,6 @@ func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*O
 	return results, nil
 }
 
-func (p *OrganizationsService) getAllPages(firstURL string, params map[string]string) ([]*Organization, error) {
-	results := make([]*Organization, 0)
-	nextURL := firstURL
-	for {
-		nextURLParsed, err := url.Parse(nextURL)
-		if err != nil {
-			return nil, err
-		}
-
-		nextURLQueryParams := make(map[string]string)
-		for paramName, paramValues := range nextURLParsed.Query() {
-			if len(paramValues) > 0 {
-				nextURLQueryParams[paramName] = paramValues[0]
-			}
-		}
-
-		for paramName, paramValue := range params {
-			nextURLQueryParams[paramName] = paramValue
-		}
-
-		result := new(ListOrganizationsResponse)
-		resp, err := p.client.Requester.GetJSON(nextURLParsed.Path, result, nextURLQueryParams)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := CheckResponse(resp); err != nil {
-			return nil, err
-		}
-
-		results = append(results, result.Results...)
-
-		if result.Next == nil || result.Next.(string) == "" {
-			break
-		}
-		nextURL = result.Next.(string)
-	}
-	return results, nil
-}
-
 // GetOrganizationsByID shows the details of a Organization.
 func (p *OrganizationsService) GetOrganizationsByID(id int, params map[string]string) (*Organization, error) {
 	result := new(Organization)
@@ -147,4 +107,46 @@ func (p *OrganizationsService) DeleteOrganization(id int) (*Organization, error)
 	}
 
 	return result, nil
+}
+
+// Must be replaced by a generic function
+// But upgrade to version go 1.18 before
+func (p *OrganizationsService) getAllPages(firstURL string, params map[string]string) ([]*Organization, error) {
+	results := make([]*Organization, 0)
+	nextURL := firstURL
+	for {
+		nextURLParsed, err := url.Parse(nextURL)
+		if err != nil {
+			return nil, err
+		}
+
+		nextURLQueryParams := make(map[string]string)
+		for paramName, paramValues := range nextURLParsed.Query() {
+			if len(paramValues) > 0 {
+				nextURLQueryParams[paramName] = paramValues[0]
+			}
+		}
+
+		for paramName, paramValue := range params {
+			nextURLQueryParams[paramName] = paramValue
+		}
+
+		result := new(ListOrganizationsResponse)
+		resp, err := p.client.Requester.GetJSON(nextURLParsed.Path, result, nextURLQueryParams)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := CheckResponse(resp); err != nil {
+			return nil, err
+		}
+
+		results = append(results, result.Results...)
+
+		if result.Next == nil || result.Next.(string) == "" {
+			break
+		}
+		nextURL = result.Next.(string)
+	}
+	return results, nil
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
 // TeamService implements awx teams apis.
@@ -20,6 +21,11 @@ type ListTeamsResponse struct {
 type ListTeamRoleEntitlementsResponse struct {
 	Pagination
 	Results []*ApplyRole `json:"results"`
+}
+
+type ListTeamUsersResponse struct {
+	Pagination
+	Results []*User `json:"results"`
 }
 
 const teamsAPIEndpoint = "/api/v2/teams/"
@@ -51,6 +57,28 @@ func (p *TeamService) ListTeamRoleEntitlements(id int, params map[string]string)
 		return nil, result, err
 	}
 	return result.Results, result, nil
+}
+
+func (p *TeamService) GetTeamUsers(id int, allPages bool, params map[string]string) ([]*User, *ListTeamUsersResponse, error) {
+	endpoint := fmt.Sprintf("%s%d/users/", teamsAPIEndpoint, id)
+	if allPages {
+		users, err := p.getAllTeamUsersPages(endpoint, params)
+		if err != nil {
+			return nil, nil, err
+		}
+		return users, nil, nil
+	} else {
+		result := new(ListTeamUsersResponse)
+		resp, err := p.client.Requester.GetJSON(endpoint, result, params)
+		if err != nil {
+			return nil, result, err
+		}
+
+		if err := CheckResponse(resp); err != nil {
+			return nil, result, err
+		}
+		return result.Results, result, nil
+	}
 }
 
 // GetTeamByID shows the details of a team.
@@ -154,4 +182,46 @@ func (p *TeamService) DeleteTeam(id int) (*Team, error) {
 	}
 
 	return result, nil
+}
+
+// Must be replaced by a generic function
+// But upgrade to version go 1.18 before
+func (p *TeamService) getAllTeamUsersPages(firstURL string, params map[string]string) ([]*User, error) {
+	results := make([]*User, 0)
+	nextURL := firstURL
+	for {
+		nextURLParsed, err := url.Parse(nextURL)
+		if err != nil {
+			return nil, err
+		}
+
+		nextURLQueryParams := make(map[string]string)
+		for paramName, paramValues := range nextURLParsed.Query() {
+			if len(paramValues) > 0 {
+				nextURLQueryParams[paramName] = paramValues[0]
+			}
+		}
+
+		for paramName, paramValue := range params {
+			nextURLQueryParams[paramName] = paramValue
+		}
+
+		result := new(ListTeamUsersResponse)
+		resp, err := p.client.Requester.GetJSON(nextURLParsed.Path, result, nextURLQueryParams)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := CheckResponse(resp); err != nil {
+			return nil, err
+		}
+
+		results = append(results, result.Results...)
+
+		if result.Next == nil || result.Next.(string) == "" {
+			break
+		}
+		nextURL = result.Next.(string)
+	}
+	return results, nil
 }
