@@ -59,9 +59,9 @@ func (p *TeamService) ListTeamRoleEntitlements(id int, params map[string]string)
 	return result.Results, result, nil
 }
 
-func (p *TeamService) GetTeamUsers(id int, allPages bool, params map[string]string) ([]*User, *ListTeamUsersResponse, error) {
+func (p *TeamService) GetTeamUsers(id int, params map[string]string, pagination *PaginationRequest) ([]*User, *ListTeamUsersResponse, error) {
 	endpoint := fmt.Sprintf("%s%d/users/", teamsAPIEndpoint, id)
-	if allPages {
+	if *pagination.AllPages {
 		users, err := p.getAllTeamUsersPages(endpoint, params)
 		if err != nil {
 			return nil, nil, err

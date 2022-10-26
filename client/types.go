@@ -16,6 +16,10 @@ type Pagination struct {
 	Previous interface{} `json:"previous"`
 }
 
+type PaginationRequest struct {
+	AllPages *bool
+}
+
 type Application struct {
 	Name                   string   `json:"name"`
 	ID                     int      `json:"id"`
