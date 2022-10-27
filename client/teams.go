@@ -18,7 +18,7 @@ type ListTeamsResponse struct {
 	Results []*Team `json:"results"`
 }
 
-type ListTeamRoleEntitlementsResponse struct {
+type ListTeamRolesResponse struct {
 	Pagination
 	Results []*ApplyRole `json:"results"`
 }
@@ -50,8 +50,8 @@ func (t *TeamService) ListTeams(params map[string]string) ([]*Team, *ListTeamsRe
 	return result.Results, result, nil
 }
 
-func (t *TeamService) ListTeamRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListTeamRoleEntitlementsResponse, error) {
-	result := new(ListTeamRoleEntitlementsResponse)
+func (t *TeamService) ListTeamRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListTeamRolesResponse, error) {
+	result := new(ListTeamRolesResponse)
 	endpoint := fmt.Sprintf("%s%d/roles/", teamsAPIEndpoint, id)
 	resp, err := t.client.Requester.GetJSON(endpoint, result, params)
 	if err != nil {
@@ -64,8 +64,8 @@ func (t *TeamService) ListTeamRoleEntitlements(id int, params map[string]string)
 	return result.Results, result, nil
 }
 
-func (t *TeamService) GetTeamObjectRoles(id int, params map[string]string, pagination *PaginationRequest) ([]*ObjectRoles, *ListTeamObjectRolesResponse, error) {
-	result := new(ListTeamObjectRolesResponse)
+func (t *TeamService) GetTeamObjectRoles(id int, params map[string]string, pagination *PaginationRequest) ([]*ApplyRole, *ListTeamRolesResponse, error) {
+	result := new(ListTeamRolesResponse)
 	endpoint := fmt.Sprintf("%s%d/object_roles/", teamsAPIEndpoint, id)
 	resp, err := t.client.Requester.GetJSON(endpoint, result, params)
 	if err != nil {
