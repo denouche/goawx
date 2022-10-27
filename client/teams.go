@@ -103,6 +103,60 @@ func (t *TeamService) GetTeamAccessList(id int, params map[string]string, pagina
 	}
 }
 
+// AddTeamUser will add the user as member in destination team
+func (t *TeamService) AddTeamUser(id int, data map[string]interface{}) error {
+	endpoint := fmt.Sprintf("%s%d/users/", teamsAPIEndpoint, id)
+	data["associate"] = true
+	mandatoryFields = []string{"id", "associate"}
+	validate, status := ValidateParams(data, mandatoryFields)
+	if !status {
+		err := fmt.Errorf("mandatory input arguments are absent: %s", validate)
+		return err
+	}
+
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	resp, err := t.client.Requester.PostJSON(endpoint, bytes.NewReader(payload), nil, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := CheckResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RemoveTeamUser will remove the user from destination team without deleting the user
+func (t *TeamService) RemoveTeamUser(id int, data map[string]interface{}) error {
+	endpoint := fmt.Sprintf("%s%d/users/", teamsAPIEndpoint, id)
+	data["disassociate"] = true
+	mandatoryFields = []string{"id", "disassociate"}
+	validate, status := ValidateParams(data, mandatoryFields)
+	if !status {
+		err := fmt.Errorf("mandatory input arguments are absent: %s", validate)
+		return err
+	}
+
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	resp, err := t.client.Requester.PostJSON(endpoint, bytes.NewReader(payload), nil, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := CheckResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GetTeamByID shows the details of a team.
 func (t *TeamService) GetTeamByID(id int, params map[string]string) (*Team, error) {
 	result := new(Team)
