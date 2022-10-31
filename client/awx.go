@@ -75,6 +75,10 @@ func ValidateParams(data map[string]interface{}, mandatoryFields []string) (notf
 }
 
 func AWXClient(baseURL string, userName string, passwd string, token string, client *http.Client) (*AWX, error) {
+	if userName != "" && token != "" {
+		return nil, fmt.Errorf("please use only one authentication method: basic or token")
+	}
+
 	var r *Requester
 	if token != "" {
 		r = &Requester{Base: baseURL, Authenticator: &TokenAuth{Token: token}, Client: client}
