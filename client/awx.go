@@ -74,8 +74,39 @@ func ValidateParams(data map[string]interface{}, mandatoryFields []string) (notf
 	return notfound, status
 }
 
+func AWXClient(baseURL string, userName string, passwd string, token string, client *http.Client) (*AWX, error) {
+	var r *Requester
+	if token != "" {
+		r = &Requester{Base: baseURL, Authenticator: &TokenAuth{Token: token}, Client: client}
+	} else {
+		if passwd == "" || userName == "" {
+			return nil, fmt.Errorf("userName and passwd must be filled in")
+		}
+		r = &Requester{Base: baseURL, Authenticator: &BasicAuth{Username: userName, Password: passwd}, Client: client}
+	}
+	if r.Client == nil {
+		r.Client = http.DefaultClient
+	}
+
+	awxClient := &Client{
+		BaseURL:   baseURL,
+		Requester: r,
+	}
+
+	newAWX := newAWX(awxClient)
+
+	_, err := newAWX.PingService.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	return newAWX, nil
+}
+
 // NewAWX news an awx handler with basic auth support, you could customize the http
 // transport by passing custom client.
+// !!!! Is deprecated
+// Preferred to user AWXClient instead of
 func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error) {
 	r := &Requester{Base: baseURL, Authenticator: &BasicAuth{Username: userName, Password: passwd}, Client: client}
 	if r.Client == nil {
@@ -99,6 +130,8 @@ func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error)
 }
 
 // NewAWXToken creates an AWX handler with token support.
+// !!!! Is deprecated
+// Preferred to user AWXClient instead of
 func NewAWXToken(baseURL, token string, client *http.Client) (*AWX, error) {
 	r := &Requester{Base: baseURL, Authenticator: &TokenAuth{Token: token}, Client: client}
 	if r.Client == nil {
