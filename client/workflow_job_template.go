@@ -3,6 +3,7 @@ package awx
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -105,6 +106,32 @@ func (jt *WorkflowJobTemplateService) DeleteWorkflowJobTemplate(id int) (*Workfl
 
 	if err := CheckResponse(resp); err != nil {
 		return nil, err
+	}
+
+	return result, nil
+}
+
+// Launch a job with the workflow job template.
+func (jt *WorkflowJobTemplateService) Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
+	result := new(JobLaunch)
+	endpoint := fmt.Sprintf("%s%d/launch/", workflowJobTemplateAPIEndpoint, id)
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jt.client.Requester.PostJSON(endpoint, bytes.NewReader(payload), result, params)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := CheckResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// in case invalid job id return
+	if result.Job == 0 {
+		return nil, errors.New("invalid job id 0")
 	}
 
 	return result, nil
