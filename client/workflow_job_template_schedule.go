@@ -9,12 +9,13 @@ import (
 const workflowJobTemplateSchedulesAPIEndpoint = "/api/v2/workflow_job_templates/%d/schedules/"
 
 // WorkflowJobTemplateScheduleService implements awx job template nodes apis.
-type WorkflowJobTemplateScheduleService struct {
-	client *Client
+type WorkflowJobTemplateScheduleService interface {
+	ListWorkflowJobTemplateSchedules(id int, params map[string]string) ([]*Schedule, *ListSchedulesResponse, error)
+	CreateWorkflowJobTemplateSchedule(id int, data map[string]interface{}, params map[string]string) (*Schedule, error)
 }
 
 // ListWorkflowJobTemplateSchedules shows a list of schedules for a given workflow_job_template
-func (jt *WorkflowJobTemplateScheduleService) ListWorkflowJobTemplateSchedules(id int, params map[string]string) ([]*Schedule, *ListSchedulesResponse, error) {
+func (jt *awx) ListWorkflowJobTemplateSchedules(id int, params map[string]string) ([]*Schedule, *ListSchedulesResponse, error) {
 	result := new(ListSchedulesResponse)
 	resp, err := jt.client.Requester.GetJSON(
 		fmt.Sprintf(workflowJobTemplateSchedulesAPIEndpoint, id),
@@ -31,7 +32,7 @@ func (jt *WorkflowJobTemplateScheduleService) ListWorkflowJobTemplateSchedules(i
 }
 
 // CreateWorkflowJobTemplateSchedule will create a schedule for an existing workflow_job_template
-func (jt *WorkflowJobTemplateScheduleService) CreateWorkflowJobTemplateSchedule(id int, data map[string]interface{}, params map[string]string) (*Schedule, error) {
+func (jt *awx) CreateWorkflowJobTemplateSchedule(id int, data map[string]interface{}, params map[string]string) (*Schedule, error) {
 	mandatoryFields = []string{"name", "rrule"}
 	validate, status := ValidateParams(data, mandatoryFields)
 	if !status {

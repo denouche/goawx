@@ -7,8 +7,14 @@ import (
 )
 
 // UserService implements awx Users apis.
-type UserService struct {
-	client *Client
+type UserService interface {
+	ListUsers(params map[string]string) ([]*User, *ListUsersResponse, error)
+	CreateUser(data map[string]interface{}, params map[string]string) (*User, error)
+	UpdateUser(id int, data map[string]interface{}, params map[string]string) (*User, error)
+	DeleteUser(id int) (*User, error)
+	GetUserByID(id int, params map[string]string) (*User, error)
+	ListUserRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListUsersEntitlementsResponse, error)
+	UpdateUserRoleEntitlement(id int, data map[string]interface{}, params map[string]string) (interface{}, error)
 }
 
 // ListUsersResponse represents `ListUsers` endpoint response.
@@ -25,7 +31,7 @@ type ListUsersEntitlementsResponse struct {
 const usersAPIEndpoint = "/api/v2/users/"
 
 // ListUsers shows list of awx Users.
-func (u *UserService) ListUsers(params map[string]string) ([]*User, *ListUsersResponse, error) {
+func (u *awx) ListUsers(params map[string]string) ([]*User, *ListUsersResponse, error) {
 	result := new(ListUsersResponse)
 	resp, err := u.client.Requester.GetJSON(usersAPIEndpoint, result, params)
 	if err != nil {
@@ -40,7 +46,7 @@ func (u *UserService) ListUsers(params map[string]string) ([]*User, *ListUsersRe
 }
 
 // CreateUser creates an awx User.
-func (u *UserService) CreateUser(data map[string]interface{}, params map[string]string) (*User, error) {
+func (u *awx) CreateUser(data map[string]interface{}, params map[string]string) (*User, error) {
 	mandatoryFields = []string{"username", "password", "first_name", "last_name", "email"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -70,7 +76,7 @@ func (u *UserService) CreateUser(data map[string]interface{}, params map[string]
 }
 
 // UpdateUser update an awx user.
-func (u *UserService) UpdateUser(id int, data map[string]interface{}, params map[string]string) (*User, error) {
+func (u *awx) UpdateUser(id int, data map[string]interface{}, params map[string]string) (*User, error) {
 	result := new(User)
 	endpoint := fmt.Sprintf("%s%d", usersAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -91,7 +97,7 @@ func (u *UserService) UpdateUser(id int, data map[string]interface{}, params map
 }
 
 // DeleteUser delete an awx User.
-func (u *UserService) DeleteUser(id int) (*User, error) {
+func (u *awx) DeleteUser(id int) (*User, error) {
 	result := new(User)
 	endpoint := fmt.Sprintf("%s%d", usersAPIEndpoint, id)
 
@@ -108,7 +114,7 @@ func (u *UserService) DeleteUser(id int) (*User, error) {
 }
 
 // GetUser read an awx User.
-func (u *UserService) GetUserByID(id int, params map[string]string) (*User, error) {
+func (u *awx) GetUserByID(id int, params map[string]string) (*User, error) {
 	result := new(User)
 	endpoint := fmt.Sprintf("%s%d", usersAPIEndpoint, id)
 	resp, err := u.client.Requester.GetJSON(endpoint, result, params)
@@ -124,7 +130,7 @@ func (u *UserService) GetUserByID(id int, params map[string]string) (*User, erro
 	return result, nil
 }
 
-func (u *UserService) ListUserRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListUsersEntitlementsResponse, error) {
+func (u *awx) ListUserRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListUsersEntitlementsResponse, error) {
 	result := new(ListUsersEntitlementsResponse)
 	endpoint := fmt.Sprintf("%s%d/roles/", usersAPIEndpoint, id)
 	resp, err := u.client.Requester.GetJSON(endpoint, result, params)
@@ -138,7 +144,7 @@ func (u *UserService) ListUserRoleEntitlements(id int, params map[string]string)
 	return result.Results, result, nil
 }
 
-func (u *UserService) UpdateUserRoleEntitlement(id int, data map[string]interface{}, params map[string]string) (interface{}, error) {
+func (u *awx) UpdateUserRoleEntitlement(id int, data map[string]interface{}, params map[string]string) (interface{}, error) {
 	result := new(interface{})
 	endpoint := fmt.Sprintf("%s%d/roles/", usersAPIEndpoint, id)
 	payload, err := json.Marshal(data)

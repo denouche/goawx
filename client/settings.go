@@ -7,8 +7,11 @@ import (
 )
 
 // SettingService implements awx settings apis.
-type SettingService struct {
-	client *Client
+type SettingService interface {
+	ListSettings(params map[string]string) ([]*SettingSummary, *ListSettingsResponse, error)
+	GetSettingsBySlug(slug string, params map[string]string) (*Setting, error)
+	UpdateSettings(slug string, data map[string]interface{}, params map[string]string) (*Setting, error)
+	DeleteSettings(slug string) (*Setting, error)
 }
 
 // ListSettingsResponse represents `ListSettings` endpoint response.
@@ -20,7 +23,7 @@ type ListSettingsResponse struct {
 const settingsAPIEndpoint = "/api/v2/settings/"
 
 // ListSettings shows list of awx settings.
-func (p *SettingService) ListSettings(params map[string]string) ([]*SettingSummary, *ListSettingsResponse, error) {
+func (p *awx) ListSettings(params map[string]string) ([]*SettingSummary, *ListSettingsResponse, error) {
 	result := new(ListSettingsResponse)
 	resp, err := p.client.Requester.GetJSON(settingsAPIEndpoint, result, params)
 	if err != nil {
@@ -35,7 +38,7 @@ func (p *SettingService) ListSettings(params map[string]string) ([]*SettingSumma
 }
 
 // GetSettingById shows the details of a setting.
-func (p *SettingService) GetSettingsBySlug(slug string, params map[string]string) (*Setting, error) {
+func (p *awx) GetSettingsBySlug(slug string, params map[string]string) (*Setting, error) {
 	result := new(Setting)
 	endpoint := fmt.Sprintf("%s%s/", settingsAPIEndpoint, slug)
 	resp, err := p.client.Requester.GetJSON(endpoint, result, params)
@@ -51,7 +54,7 @@ func (p *SettingService) GetSettingsBySlug(slug string, params map[string]string
 }
 
 // UpdateSetting update an awx Setting.
-func (p *SettingService) UpdateSettings(slug string, data map[string]interface{}, params map[string]string) (*Setting, error) {
+func (p *awx) UpdateSettings(slug string, data map[string]interface{}, params map[string]string) (*Setting, error) {
 	result := new(Setting)
 	endpoint := fmt.Sprintf("%s%s", settingsAPIEndpoint, slug)
 	payload, err := json.Marshal(data)
@@ -71,7 +74,7 @@ func (p *SettingService) UpdateSettings(slug string, data map[string]interface{}
 }
 
 // DeleteSetting delete an awx Setting.
-func (p *SettingService) DeleteSettings(slug string) (*Setting, error) {
+func (p *awx) DeleteSettings(slug string) (*Setting, error) {
 	result := new(Setting)
 	endpoint := fmt.Sprintf("%s%s", settingsAPIEndpoint, slug)
 

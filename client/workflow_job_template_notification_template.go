@@ -9,11 +9,18 @@ import (
 const workflowJobTemplateNotificationTemplatesAPIEndpoint = "/api/v2/workflow_job_templates/%d/notification_templates_%s/"
 
 // WorkflowJobTemplateNotificationTemplatesService implements awx job template nodes apis.
-type WorkflowJobTemplateNotificationTemplatesService struct {
-	client *Client
+type WorkflowJobTemplateNotificationTemplatesService interface {
+	AssociateWorkflowJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	AssociateWorkflowJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	AssociateWorkflowJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	AssociateWorkflowJobTemplateNotificationTemplatesApprovals(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	DisassociateWorkflowJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	DisassociateWorkflowJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	DisassociateWorkflowJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	DisassociateWorkflowJobTemplateNotificationTemplatesApprovals(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
 }
 
-func (s *WorkflowJobTemplateNotificationTemplatesService) associateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
+func (s *awx) associateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
 	result := new(NotificationTemplate)
 
 	data := map[string]interface{}{
@@ -46,26 +53,26 @@ func (s *WorkflowJobTemplateNotificationTemplatesService) associateWorkflowJobTe
 }
 
 // AssociateWorkflowJobTemplateNotificationTemplatesError will associate an error notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) AssociateWorkflowJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) AssociateWorkflowJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.associateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "error")
 }
 
 // AssociateWorkflowJobTemplateNotificationTemplatesSuccess will associate a success notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) AssociateWorkflowJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) AssociateWorkflowJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.associateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "success")
 }
 
 // AssociateWorkflowJobTemplateNotificationTemplatesStarted will associate a started notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) AssociateWorkflowJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) AssociateWorkflowJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.associateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "started")
 }
 
 // AssociateWorkflowJobTemplateNotificationTemplatesApprovals will associate an approval notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) AssociateWorkflowJobTemplateNotificationTemplatesApprovals(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) AssociateWorkflowJobTemplateNotificationTemplatesApprovals(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.associateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "approvals")
 }
 
-func (s *WorkflowJobTemplateNotificationTemplatesService) disassociateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
+func (s *awx) disassociateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
 	result := new(NotificationTemplate)
 
 	data := map[string]interface{}{
@@ -98,21 +105,21 @@ func (s *WorkflowJobTemplateNotificationTemplatesService) disassociateWorkflowJo
 }
 
 // DisassociateWorkflowJobTemplateNotificationTemplatesError will disassociate an error notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) DisassociateWorkflowJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) DisassociateWorkflowJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.disassociateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "error")
 }
 
 // DisassociateWorkflowJobTemplateNotificationTemplatesSuccess will disassociate a success notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) DisassociateWorkflowJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) DisassociateWorkflowJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.disassociateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "success")
 }
 
 // DisassociateWorkflowJobTemplateNotificationTemplatesStarted will disassociate a started notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) DisassociateWorkflowJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) DisassociateWorkflowJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.disassociateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "started")
 }
 
 // DisassociateWorkflowJobTemplateNotificationTemplatesApprovals will disassociate an approval notification_template for a job_template
-func (s *WorkflowJobTemplateNotificationTemplatesService) DisassociateWorkflowJobTemplateNotificationTemplatesApprovals(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (s *awx) DisassociateWorkflowJobTemplateNotificationTemplatesApprovals(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return s.disassociateWorkflowJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "approvals")
 }

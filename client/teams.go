@@ -8,8 +8,19 @@ import (
 )
 
 // TeamService implements awx teams apis.
-type TeamService struct {
-	client *Client
+type TeamService interface {
+	ListTeams(params map[string]string) ([]*Team, *ListTeamsResponse, error)
+	ListTeamRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListTeamRolesResponse, error)
+	GetTeamObjectRoles(id int, params map[string]string, pagination *PaginationRequest) ([]*ApplyRole, *ListTeamRolesResponse, error)
+	GetTeamUsers(id int, params map[string]string, pagination *PaginationRequest) ([]*User, *ListTeamUsersResponse, error)
+	GetTeamAccessList(id int, params map[string]string, pagination *PaginationRequest) ([]*User, *ListTeamUsersResponse, error)
+	AddTeamUser(id int, data map[string]interface{}) error
+	RemoveTeamUser(id int, data map[string]interface{}) error
+	GetTeamByID(id int, params map[string]string) (*Team, error)
+	CreateTeam(data map[string]interface{}, params map[string]string) (*Team, error)
+	UpdateTeam(id int, data map[string]interface{}, params map[string]string) (*Team, error)
+	UpdateTeamRoleEntitlement(id int, data map[string]interface{}, params map[string]string) (interface{}, error)
+	DeleteTeam(id int) (*Team, error)
 }
 
 // ListTeamsResponse represents `ListTeams` endpoint response.
@@ -36,7 +47,7 @@ type ListTeamUsersResponse struct {
 const teamsAPIEndpoint = "/api/v2/teams/"
 
 // ListTeams shows list of awx teams.
-func (t *TeamService) ListTeams(params map[string]string) ([]*Team, *ListTeamsResponse, error) {
+func (t *awx) ListTeams(params map[string]string) ([]*Team, *ListTeamsResponse, error) {
 	result := new(ListTeamsResponse)
 	resp, err := t.client.Requester.GetJSON(teamsAPIEndpoint, result, params)
 	if err != nil {
@@ -50,7 +61,7 @@ func (t *TeamService) ListTeams(params map[string]string) ([]*Team, *ListTeamsRe
 	return result.Results, result, nil
 }
 
-func (t *TeamService) ListTeamRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListTeamRolesResponse, error) {
+func (t *awx) ListTeamRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListTeamRolesResponse, error) {
 	result := new(ListTeamRolesResponse)
 	endpoint := fmt.Sprintf("%s%d/roles/", teamsAPIEndpoint, id)
 	resp, err := t.client.Requester.GetJSON(endpoint, result, params)
@@ -64,7 +75,7 @@ func (t *TeamService) ListTeamRoleEntitlements(id int, params map[string]string)
 	return result.Results, result, nil
 }
 
-func (t *TeamService) GetTeamObjectRoles(id int, params map[string]string, pagination *PaginationRequest) ([]*ApplyRole, *ListTeamRolesResponse, error) {
+func (t *awx) GetTeamObjectRoles(id int, params map[string]string, pagination *PaginationRequest) ([]*ApplyRole, *ListTeamRolesResponse, error) {
 	result := new(ListTeamRolesResponse)
 	endpoint := fmt.Sprintf("%s%d/object_roles/", teamsAPIEndpoint, id)
 	resp, err := t.client.Requester.GetJSON(endpoint, result, params)
@@ -78,7 +89,7 @@ func (t *TeamService) GetTeamObjectRoles(id int, params map[string]string, pagin
 	return result.Results, result, nil
 }
 
-func (t *TeamService) GetTeamUsers(id int, params map[string]string, pagination *PaginationRequest) ([]*User, *ListTeamUsersResponse, error) {
+func (t *awx) GetTeamUsers(id int, params map[string]string, pagination *PaginationRequest) ([]*User, *ListTeamUsersResponse, error) {
 	endpoint := fmt.Sprintf("%s%d/users/", teamsAPIEndpoint, id)
 	if *pagination.AllPages {
 		users, err := t.getAllTeamUsersPages(endpoint, params)
@@ -100,7 +111,7 @@ func (t *TeamService) GetTeamUsers(id int, params map[string]string, pagination 
 	}
 }
 
-func (t *TeamService) GetTeamAccessList(id int, params map[string]string, pagination *PaginationRequest) ([]*User, *ListTeamUsersResponse, error) {
+func (t *awx) GetTeamAccessList(id int, params map[string]string, pagination *PaginationRequest) ([]*User, *ListTeamUsersResponse, error) {
 	endpoint := fmt.Sprintf("%s%d/access_list/", teamsAPIEndpoint, id)
 	if *pagination.AllPages {
 		users, err := t.getAllTeamUsersPages(endpoint, params)
@@ -123,7 +134,7 @@ func (t *TeamService) GetTeamAccessList(id int, params map[string]string, pagina
 }
 
 // AddTeamUser will add the user as member in destination team
-func (t *TeamService) AddTeamUser(id int, data map[string]interface{}) error {
+func (t *awx) AddTeamUser(id int, data map[string]interface{}) error {
 	endpoint := fmt.Sprintf("%s%d/users/", teamsAPIEndpoint, id)
 	data["associate"] = true
 	mandatoryFields = []string{"id", "associate"}
@@ -150,7 +161,7 @@ func (t *TeamService) AddTeamUser(id int, data map[string]interface{}) error {
 }
 
 // RemoveTeamUser will remove the user from destination team without deleting the user
-func (t *TeamService) RemoveTeamUser(id int, data map[string]interface{}) error {
+func (t *awx) RemoveTeamUser(id int, data map[string]interface{}) error {
 	endpoint := fmt.Sprintf("%s%d/users/", teamsAPIEndpoint, id)
 	data["disassociate"] = true
 	mandatoryFields = []string{"id", "disassociate"}
@@ -177,7 +188,7 @@ func (t *TeamService) RemoveTeamUser(id int, data map[string]interface{}) error 
 }
 
 // GetTeamByID shows the details of a team.
-func (t *TeamService) GetTeamByID(id int, params map[string]string) (*Team, error) {
+func (t *awx) GetTeamByID(id int, params map[string]string) (*Team, error) {
 	result := new(Team)
 	endpoint := fmt.Sprintf("%s%d/", teamsAPIEndpoint, id)
 	resp, err := t.client.Requester.GetJSON(endpoint, result, params)
@@ -193,7 +204,7 @@ func (t *TeamService) GetTeamByID(id int, params map[string]string) (*Team, erro
 }
 
 // CreateTeam creates an awx team.
-func (t *TeamService) CreateTeam(data map[string]interface{}, params map[string]string) (*Team, error) {
+func (t *awx) CreateTeam(data map[string]interface{}, params map[string]string) (*Team, error) {
 	mandatoryFields = []string{"name", "organization"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -223,7 +234,7 @@ func (t *TeamService) CreateTeam(data map[string]interface{}, params map[string]
 }
 
 // UpdateTeam update an awx Team.
-func (t *TeamService) UpdateTeam(id int, data map[string]interface{}, params map[string]string) (*Team, error) {
+func (t *awx) UpdateTeam(id int, data map[string]interface{}, params map[string]string) (*Team, error) {
 	result := new(Team)
 	endpoint := fmt.Sprintf("%s%d/", teamsAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -242,7 +253,7 @@ func (t *TeamService) UpdateTeam(id int, data map[string]interface{}, params map
 	return result, nil
 }
 
-func (t *TeamService) UpdateTeamRoleEntitlement(id int, data map[string]interface{}, params map[string]string) (interface{}, error) {
+func (t *awx) UpdateTeamRoleEntitlement(id int, data map[string]interface{}, params map[string]string) (interface{}, error) {
 	result := new(interface{})
 	endpoint := fmt.Sprintf("%s%d/roles/", teamsAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -263,7 +274,7 @@ func (t *TeamService) UpdateTeamRoleEntitlement(id int, data map[string]interfac
 }
 
 // DeleteTeam delete an awx Team.
-func (t *TeamService) DeleteTeam(id int) (*Team, error) {
+func (t *awx) DeleteTeam(id int) (*Team, error) {
 	result := new(Team)
 	endpoint := fmt.Sprintf("%s%d", teamsAPIEndpoint, id)
 
@@ -281,7 +292,7 @@ func (t *TeamService) DeleteTeam(id int) (*Team, error) {
 
 // Must be replaced by a generic function
 // But upgrade to version go 1.18 before
-func (t *TeamService) getAllTeamUsersPages(firstURL string, params map[string]string) ([]*User, error) {
+func (t *awx) getAllTeamUsersPages(firstURL string, params map[string]string) ([]*User, error) {
 	results := make([]*User, 0)
 	nextURL := firstURL
 	for {

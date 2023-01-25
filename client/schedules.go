@@ -7,8 +7,12 @@ import (
 )
 
 // SchedulesService implements awx projects apis.
-type SchedulesService struct {
-	client *Client
+type SchedulesService interface {
+	List(params map[string]string) ([]*Schedule, *ListSchedulesResponse, error)
+	GetByID(id int, params map[string]string) (*Schedule, error)
+	Create(data map[string]interface{}, params map[string]string) (*Schedule, error)
+	Update(id int, data map[string]interface{}, params map[string]string) (*Schedule, error)
+	Delete(id int) (*Schedule, error)
 }
 
 // ListSchedulesResponse represents `List` endpoint response.
@@ -19,7 +23,7 @@ type ListSchedulesResponse struct {
 
 const schedulesAPIEndpoint = "/api/v2/schedules/"
 
-func (s *SchedulesService) List(params map[string]string) ([]*Schedule, *ListSchedulesResponse, error) {
+func (s *awx) ListSchedule(params map[string]string) ([]*Schedule, *ListSchedulesResponse, error) {
 	result := new(ListSchedulesResponse)
 	resp, err := s.client.Requester.GetJSON(schedulesAPIEndpoint, result, params)
 	if err != nil {
@@ -34,7 +38,7 @@ func (s *SchedulesService) List(params map[string]string) ([]*Schedule, *ListSch
 }
 
 // GetByID shows the details of a schedule.
-func (s *SchedulesService) GetByID(id int, params map[string]string) (*Schedule, error) {
+func (s *awx) GetByID(id int, params map[string]string) (*Schedule, error) {
 	result := new(Schedule)
 	endpoint := fmt.Sprintf("%s%d/", schedulesAPIEndpoint, id)
 	resp, err := s.client.Requester.GetJSON(endpoint, result, params)
@@ -50,7 +54,7 @@ func (s *SchedulesService) GetByID(id int, params map[string]string) (*Schedule,
 }
 
 // Create creates an awx schedule.
-func (s *SchedulesService) Create(data map[string]interface{}, params map[string]string) (*Schedule, error) {
+func (s *awx) CreateSchedule(data map[string]interface{}, params map[string]string) (*Schedule, error) {
 	mandatoryFields = []string{"name", "rrule", "unified_job_template"}
 	validate, status := ValidateParams(data, mandatoryFields)
 	if !status {
@@ -77,7 +81,7 @@ func (s *SchedulesService) Create(data map[string]interface{}, params map[string
 }
 
 // Update update an awx schedule.
-func (s *SchedulesService) Update(id int, data map[string]interface{}, params map[string]string) (*Schedule, error) {
+func (s *awx) Update(id int, data map[string]interface{}, params map[string]string) (*Schedule, error) {
 	result := new(Schedule)
 	endpoint := fmt.Sprintf("%s%d", schedulesAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -97,7 +101,7 @@ func (s *SchedulesService) Update(id int, data map[string]interface{}, params ma
 }
 
 // Delete delete an awx schedule.
-func (s *SchedulesService) Delete(id int) (*Schedule, error) {
+func (s *awx) Delete(id int) (*Schedule, error) {
 	result := new(Schedule)
 	endpoint := fmt.Sprintf("%s%d", schedulesAPIEndpoint, id)
 

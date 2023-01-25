@@ -7,8 +7,13 @@ import (
 )
 
 // WorkflowJobTemplateService implements awx workflow job template apis.
-type WorkflowJobTemplateService struct {
-	client *Client
+type WorkflowJobTemplateService interface {
+	GetWorkflowJobTemplateByID(id int, params map[string]string) (*WorkflowJobTemplate, error)
+	ListWorkflowJobTemplates(params map[string]string) ([]*WorkflowJobTemplate, *ListWorkflowJobTemplatesResponse, error)
+	CreateWorkflowJobTemplate(data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error)
+	UpdateWorkflowJobTemplate(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error)
+	DeleteWorkflowJobTemplate(id int) (*WorkflowJobTemplate, error)
+	Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error)
 }
 
 // ListWorkflowJobTemplatesResponse represents `ListWorkflowJobTemplate` endpoint response.
@@ -20,7 +25,7 @@ type ListWorkflowJobTemplatesResponse struct {
 const workflowJobTemplateAPIEndpoint = "/api/v2/workflow_job_templates/"
 
 // GetWorkflowJobTemplateByID shows the details of a workflow job template.
-func (jt *WorkflowJobTemplateService) GetWorkflowJobTemplateByID(id int, params map[string]string) (*WorkflowJobTemplate, error) {
+func (jt *awx) GetWorkflowJobTemplateByID(id int, params map[string]string) (*WorkflowJobTemplate, error) {
 	result := new(WorkflowJobTemplate)
 	endpoint := fmt.Sprintf("%s%d/", workflowJobTemplateAPIEndpoint, id)
 	resp, err := jt.client.Requester.GetJSON(endpoint, result, params)
@@ -36,7 +41,7 @@ func (jt *WorkflowJobTemplateService) GetWorkflowJobTemplateByID(id int, params 
 }
 
 // ListWorkflowJobTemplates shows a list of workflow job templates.
-func (jt *WorkflowJobTemplateService) ListWorkflowJobTemplates(params map[string]string) ([]*WorkflowJobTemplate, *ListWorkflowJobTemplatesResponse, error) {
+func (jt *awx) ListWorkflowJobTemplates(params map[string]string) ([]*WorkflowJobTemplate, *ListWorkflowJobTemplatesResponse, error) {
 	result := new(ListWorkflowJobTemplatesResponse)
 	resp, err := jt.client.Requester.GetJSON(workflowJobTemplateAPIEndpoint, result, params)
 	if err != nil {
@@ -51,7 +56,7 @@ func (jt *WorkflowJobTemplateService) ListWorkflowJobTemplates(params map[string
 }
 
 // CreateWorkflowJobTemplate creates a workflow job template
-func (jt *WorkflowJobTemplateService) CreateWorkflowJobTemplate(data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error) {
+func (jt *awx) CreateWorkflowJobTemplate(data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error) {
 	result := new(WorkflowJobTemplate)
 	mandatoryFields = []string{"name"}
 	validate, status := ValidateParams(data, mandatoryFields)
@@ -75,7 +80,7 @@ func (jt *WorkflowJobTemplateService) CreateWorkflowJobTemplate(data map[string]
 }
 
 // UpdateWorkflowJobTemplate updates a workflow job template.
-func (jt *WorkflowJobTemplateService) UpdateWorkflowJobTemplate(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error) {
+func (jt *awx) UpdateWorkflowJobTemplate(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error) {
 	result := new(WorkflowJobTemplate)
 	endpoint := fmt.Sprintf("%s%d", workflowJobTemplateAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -94,7 +99,7 @@ func (jt *WorkflowJobTemplateService) UpdateWorkflowJobTemplate(id int, data map
 }
 
 // DeleteWorkflowJobTemplate deletes a workflow job template.
-func (jt *WorkflowJobTemplateService) DeleteWorkflowJobTemplate(id int) (*WorkflowJobTemplate, error) {
+func (jt *awx) DeleteWorkflowJobTemplate(id int) (*WorkflowJobTemplate, error) {
 	result := new(WorkflowJobTemplate)
 	endpoint := fmt.Sprintf("%s%d", workflowJobTemplateAPIEndpoint, id)
 
@@ -111,7 +116,7 @@ func (jt *WorkflowJobTemplateService) DeleteWorkflowJobTemplate(id int) (*Workfl
 }
 
 // Launch a job with the workflow job template.
-func (jt *WorkflowJobTemplateService) Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
+func (jt *awx) Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
 	result := new(JobLaunch)
 	endpoint := fmt.Sprintf("%s%d/launch/", workflowJobTemplateAPIEndpoint, id)
 	payload, err := json.Marshal(data)

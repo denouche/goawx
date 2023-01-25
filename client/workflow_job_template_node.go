@@ -7,8 +7,12 @@ import (
 )
 
 // WorkflowJobTemplateNodeService implements awx job template node apis.
-type WorkflowJobTemplateNodeService struct {
-	client *Client
+type WorkflowJobTemplateNodeService interface {
+	GetWorkflowJobTemplateNodeByID(id int, params map[string]string) (*WorkflowJobTemplateNode, error)
+	ListWorkflowJobTemplateNodes(params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error)
+	CreateWorkflowJobTemplateNode(data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
+	UpdateWorkflowJobTemplateNode(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
+	DeleteWorkflowJobTemplateNode(id int) (*WorkflowJobTemplateNode, error)
 }
 
 // ListWorkflowJobTemplateNodesResponse represents `ListWorkflowJobTemplateNodes` endpoint response.
@@ -20,7 +24,7 @@ type ListWorkflowJobTemplateNodesResponse struct {
 const workflowJobTemplateNodeAPIEndpoint = "/api/v2/workflow_job_template_nodes/"
 
 // GetWorkflowJobTemplateNodeByID shows the details of a job template node.
-func (jt *WorkflowJobTemplateNodeService) GetWorkflowJobTemplateNodeByID(id int, params map[string]string) (*WorkflowJobTemplateNode, error) {
+func (jt *awx) GetWorkflowJobTemplateNodeByID(id int, params map[string]string) (*WorkflowJobTemplateNode, error) {
 	result := new(WorkflowJobTemplateNode)
 	endpoint := fmt.Sprintf("%s%d/", workflowJobTemplateNodeAPIEndpoint, id)
 	resp, err := jt.client.Requester.GetJSON(endpoint, result, params)
@@ -36,7 +40,7 @@ func (jt *WorkflowJobTemplateNodeService) GetWorkflowJobTemplateNodeByID(id int,
 }
 
 // ListWorkflowJobTemplateNodes shows a list of job templates nodes.
-func (jt *WorkflowJobTemplateNodeService) ListWorkflowJobTemplateNodes(params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
+func (jt *awx) ListWorkflowJobTemplateNodes(params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
 	result := new(ListWorkflowJobTemplateNodesResponse)
 
 	resp, err := jt.client.Requester.GetJSON(workflowJobTemplateNodeAPIEndpoint, result, params)
@@ -52,7 +56,7 @@ func (jt *WorkflowJobTemplateNodeService) ListWorkflowJobTemplateNodes(params ma
 }
 
 // CreateWorkflowJobTemplateNode creates a job template node, without any pe exisiting nodes.
-func (jt *WorkflowJobTemplateNodeService) CreateWorkflowJobTemplateNode(data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+func (jt *awx) CreateWorkflowJobTemplateNode(data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
 	result := new(WorkflowJobTemplateNode)
 	mandatoryFields = []string{"workflow_job_template", "unified_job_template", "identifier"}
 	validate, status := ValidateParams(data, mandatoryFields)
@@ -75,7 +79,7 @@ func (jt *WorkflowJobTemplateNodeService) CreateWorkflowJobTemplateNode(data map
 }
 
 // UpdateWorkflowJobTemplateNode updates a job template node.
-func (jt *WorkflowJobTemplateNodeService) UpdateWorkflowJobTemplateNode(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+func (jt *awx) UpdateWorkflowJobTemplateNode(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
 	result := new(WorkflowJobTemplateNode)
 	endpoint := fmt.Sprintf("%s%d", workflowJobTemplateNodeAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -94,7 +98,7 @@ func (jt *WorkflowJobTemplateNodeService) UpdateWorkflowJobTemplateNode(id int, 
 }
 
 // DeleteWorkflowJobTemplateNode deletes a job template node.
-func (jt *WorkflowJobTemplateNodeService) DeleteWorkflowJobTemplateNode(id int) (*WorkflowJobTemplateNode, error) {
+func (jt *awx) DeleteWorkflowJobTemplateNode(id int) (*WorkflowJobTemplateNode, error) {
 	result := new(WorkflowJobTemplateNode)
 	endpoint := fmt.Sprintf("%s%d", workflowJobTemplateNodeAPIEndpoint, id)
 
