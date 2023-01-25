@@ -7,8 +7,12 @@ import (
 )
 
 // ProjectService implements awx projects apis.
-type ProjectService struct {
-	client *Client
+type ProjectService interface {
+	ListProjects(params map[string]string) ([]*Project, *ListProjectsResponse, error)
+	GetProjectByID(id int, params map[string]string) (*Project, error)
+	CreateProject(data map[string]interface{}, params map[string]string) (*Project, error)
+	UpdateProject(id int, data map[string]interface{}, params map[string]string) (*Project, error)
+	DeleteProject(id int) (*Project, error)
 }
 
 // ListProjectsResponse represents `ListProjects` endpoint response.
@@ -20,7 +24,7 @@ type ListProjectsResponse struct {
 const projectsAPIEndpoint = "/api/v2/projects/"
 
 // ListProjects shows list of awx projects.
-func (p *ProjectService) ListProjects(params map[string]string) ([]*Project, *ListProjectsResponse, error) {
+func (p *awx) ListProjects(params map[string]string) ([]*Project, *ListProjectsResponse, error) {
 	result := new(ListProjectsResponse)
 	resp, err := p.client.Requester.GetJSON(projectsAPIEndpoint, result, params)
 	if err != nil {
@@ -35,7 +39,7 @@ func (p *ProjectService) ListProjects(params map[string]string) ([]*Project, *Li
 }
 
 // GetProjectByID shows the details of a project.
-func (p *ProjectService) GetProjectByID(id int, params map[string]string) (*Project, error) {
+func (p *awx) GetProjectByID(id int, params map[string]string) (*Project, error) {
 	result := new(Project)
 	endpoint := fmt.Sprintf("%s%d/", projectsAPIEndpoint, id)
 	resp, err := p.client.Requester.GetJSON(endpoint, result, params)
@@ -51,7 +55,7 @@ func (p *ProjectService) GetProjectByID(id int, params map[string]string) (*Proj
 }
 
 // CreateProject creates an awx project.
-func (p *ProjectService) CreateProject(data map[string]interface{}, params map[string]string) (*Project, error) {
+func (p *awx) CreateProject(data map[string]interface{}, params map[string]string) (*Project, error) {
 	mandatoryFields = []string{"name", "organization", "scm_type"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -81,7 +85,7 @@ func (p *ProjectService) CreateProject(data map[string]interface{}, params map[s
 }
 
 // UpdateProject update an awx Project.
-func (p *ProjectService) UpdateProject(id int, data map[string]interface{}, params map[string]string) (*Project, error) {
+func (p *awx) UpdateProject(id int, data map[string]interface{}, params map[string]string) (*Project, error) {
 	result := new(Project)
 	endpoint := fmt.Sprintf("%s%d", projectsAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -101,7 +105,7 @@ func (p *ProjectService) UpdateProject(id int, data map[string]interface{}, para
 }
 
 // DeleteProject delete an awx Project.
-func (p *ProjectService) DeleteProject(id int) (*Project, error) {
+func (p *awx) DeleteProject(id int) (*Project, error) {
 	result := new(Project)
 	endpoint := fmt.Sprintf("%s%d", projectsAPIEndpoint, id)
 

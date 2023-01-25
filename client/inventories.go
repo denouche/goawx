@@ -7,8 +7,13 @@ import (
 )
 
 // InventoriesService implements awx inventories apis.
-type InventoriesService struct {
-	client *Client
+type InventoriesService interface {
+	GetInventoryByID(id int, params map[string]string) (*Inventory, error)
+	ListInventories(params map[string]string) ([]*Inventory, *ListInventoriesResponse, error)
+	CreateInventory(data map[string]interface{}, params map[string]string) (*Inventory, error)
+	UpdateInventory(id int, data map[string]interface{}, params map[string]string) (*Inventory, error)
+	GetInventory(id int, params map[string]string) (*Inventory, error)
+	DeleteInventory(id int) (*Inventory, error)
 }
 
 // ListInventoriesResponse represents `ListInventories` endpoint response.
@@ -20,7 +25,7 @@ type ListInventoriesResponse struct {
 const inventoriesAPIEndpoint = "/api/v2/inventories/"
 
 // GetInventoryByID shows the details of a awx inventroy sources.
-func (i *InventoriesService) GetInventoryByID(id int, params map[string]string) (*Inventory, error) {
+func (i *awx) GetInventoryByID(id int, params map[string]string) (*Inventory, error) {
 	result := new(Inventory)
 	endpoint := fmt.Sprintf("%s%d/", inventoriesAPIEndpoint, id)
 	resp, err := i.client.Requester.GetJSON(endpoint, result, params)
@@ -36,7 +41,7 @@ func (i *InventoriesService) GetInventoryByID(id int, params map[string]string) 
 }
 
 // ListInventories shows list of awx inventories.
-func (i *InventoriesService) ListInventories(params map[string]string) ([]*Inventory, *ListInventoriesResponse, error) {
+func (i *awx) ListInventories(params map[string]string) ([]*Inventory, *ListInventoriesResponse, error) {
 	result := new(ListInventoriesResponse)
 	resp, err := i.client.Requester.GetJSON(inventoriesAPIEndpoint, result, params)
 	if err != nil {
@@ -51,7 +56,7 @@ func (i *InventoriesService) ListInventories(params map[string]string) ([]*Inven
 }
 
 // CreateInventory creates an awx inventory.
-func (i *InventoriesService) CreateInventory(data map[string]interface{}, params map[string]string) (*Inventory, error) {
+func (i *awx) CreateInventory(data map[string]interface{}, params map[string]string) (*Inventory, error) {
 	mandatoryFields = []string{"name", "organization"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -81,7 +86,7 @@ func (i *InventoriesService) CreateInventory(data map[string]interface{}, params
 }
 
 // UpdateInventory update an awx inventory
-func (i *InventoriesService) UpdateInventory(id int, data map[string]interface{}, params map[string]string) (*Inventory, error) {
+func (i *awx) UpdateInventory(id int, data map[string]interface{}, params map[string]string) (*Inventory, error) {
 	result := new(Inventory)
 	endpoint := fmt.Sprintf("%s%d", inventoriesAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -101,7 +106,7 @@ func (i *InventoriesService) UpdateInventory(id int, data map[string]interface{}
 }
 
 // GetInventory retrives the inventory information from its ID or Name
-func (i *InventoriesService) GetInventory(id int, params map[string]string) (*Inventory, error) {
+func (i *awx) GetInventory(id int, params map[string]string) (*Inventory, error) {
 	endpoint := fmt.Sprintf("%s%d", inventoriesAPIEndpoint, id)
 	result := new(Inventory)
 	resp, err := i.client.Requester.GetJSON(endpoint, result, map[string]string{})
@@ -117,7 +122,7 @@ func (i *InventoriesService) GetInventory(id int, params map[string]string) (*In
 }
 
 // DeleteInventory delete an inventory from AWX
-func (i *InventoriesService) DeleteInventory(id int) (*Inventory, error) {
+func (i *awx) DeleteInventory(id int) (*Inventory, error) {
 	result := new(Inventory)
 	endpoint := fmt.Sprintf("%s%d", inventoriesAPIEndpoint, id)
 

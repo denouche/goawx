@@ -7,8 +7,12 @@ import (
 	"net/url"
 )
 
-type CredentialsService struct {
-	client *Client
+type CredentialsService interface {
+	ListCredentials(params map[string]string) ([]*Credential, error)
+	CreateCredentials(data map[string]interface{}, params map[string]string) (*Credential, error)
+	GetCredentialsByID(id int, params map[string]string) (*Credential, error)
+	UpdateCredentialsByID(id int, data map[string]interface{}, params map[string]string) (*Credential, error)
+	DeleteCredentialsByID(id int, params map[string]string) error
 }
 
 type ListCredentialsResponse struct {
@@ -18,7 +22,7 @@ type ListCredentialsResponse struct {
 
 const credentialsAPIEndpoint = "/api/v2/credentials/"
 
-func (cs *CredentialsService) ListCredentials(params map[string]string) ([]*Credential, error) {
+func (cs *awx) ListCredentials(params map[string]string) ([]*Credential, error) {
 	results, err := cs.getAllPages(organizationsAPIEndpoint, params)
 	if err != nil {
 		return nil, err
@@ -26,7 +30,7 @@ func (cs *CredentialsService) ListCredentials(params map[string]string) ([]*Cred
 	return results, nil
 }
 
-func (cs *CredentialsService) getAllPages(firstURL string, params map[string]string) ([]*Credential, error) {
+func (cs *awx) getAllPages(firstURL string, params map[string]string) ([]*Credential, error) {
 	results := make([]*Credential, 0)
 	nextURL := firstURL
 	for {
@@ -66,7 +70,7 @@ func (cs *CredentialsService) getAllPages(firstURL string, params map[string]str
 	return results, nil
 }
 
-func (cs *CredentialsService) CreateCredentials(data map[string]interface{}, params map[string]string) (*Credential, error) {
+func (cs *awx) CreateCredentials(data map[string]interface{}, params map[string]string) (*Credential, error) {
 	result := new(Credential)
 	payload, err := json.Marshal(data)
 	if err != nil {
@@ -86,7 +90,7 @@ func (cs *CredentialsService) CreateCredentials(data map[string]interface{}, par
 	return result, nil
 }
 
-func (cs *CredentialsService) GetCredentialsByID(id int, params map[string]string) (*Credential, error) {
+func (cs *awx) GetCredentialsByID(id int, params map[string]string) (*Credential, error) {
 	result := new(Credential)
 	endpoint := fmt.Sprintf("%s%d", credentialsAPIEndpoint, id)
 	resp, err := cs.client.Requester.GetJSON(endpoint, result, params)
@@ -102,7 +106,7 @@ func (cs *CredentialsService) GetCredentialsByID(id int, params map[string]strin
 	return result, nil
 }
 
-func (cs *CredentialsService) UpdateCredentialsByID(id int, data map[string]interface{},
+func (cs *awx) UpdateCredentialsByID(id int, data map[string]interface{},
 	params map[string]string) (*Credential, error) {
 	result := new(Credential)
 	endpoint := fmt.Sprintf("%s%d", credentialsAPIEndpoint, id)
@@ -125,7 +129,7 @@ func (cs *CredentialsService) UpdateCredentialsByID(id int, data map[string]inte
 	return result, nil
 }
 
-func (cs *CredentialsService) DeleteCredentialsByID(id int, params map[string]string) error {
+func (cs *awx) DeleteCredentialsByID(id int, params map[string]string) error {
 	endpoint := fmt.Sprintf("%s%d", credentialsAPIEndpoint, id)
 	resp, err := cs.client.Requester.Delete(endpoint, nil, params)
 	if err != nil {

@@ -6,8 +6,12 @@ import (
 	"fmt"
 )
 
-type ApplicationService struct {
-	client *Client
+type ApplicationService interface {
+	ListApplication(params map[string]string) ([]*Application, *ListApplicationResponse, error)
+	GetApplicationByID(id int, params map[string]string) (*Application, error)
+	CreateApplication(data map[string]interface{}, params map[string]string) (*Application, error)
+	UpdateApplication(id int, data map[string]interface{}, params map[string]string) (*Application, error)
+	DeleteApplication(id int) (*Application, error)
 }
 
 type ListApplicationResponse struct {
@@ -18,7 +22,7 @@ type ListApplicationResponse struct {
 const applicationAPIEndpoint = "/api/v2/applications/"
 
 // ListApplication shows list of awx authentication applications.
-func (c *ApplicationService) ListApplication(params map[string]string) ([]*Application, *ListApplicationResponse, error) {
+func (c *awx) ListApplication(params map[string]string) ([]*Application, *ListApplicationResponse, error) {
 	result := new(ListApplicationResponse)
 	resp, err := c.client.Requester.GetJSON(applicationAPIEndpoint, result, params)
 	if err != nil {
@@ -33,7 +37,7 @@ func (c *ApplicationService) ListApplication(params map[string]string) ([]*Appli
 }
 
 // GetApplicationByID shows an of awx application by its ID.
-func (c *ApplicationService) GetApplicationByID(id int, params map[string]string) (*Application, error) {
+func (c *awx) GetApplicationByID(id int, params map[string]string) (*Application, error) {
 	result := new(Application)
 	endpoint := fmt.Sprintf("%s%d", applicationAPIEndpoint, id)
 	resp, err := c.client.Requester.GetJSON(endpoint, result, params)
@@ -50,7 +54,7 @@ func (c *ApplicationService) GetApplicationByID(id int, params map[string]string
 }
 
 // CreateApplication creates an awx authentication application.
-func (c *ApplicationService) CreateApplication(data map[string]interface{}, params map[string]string) (*Application, error) {
+func (c *awx) CreateApplication(data map[string]interface{}, params map[string]string) (*Application, error) {
 	mandatoryFields = []string{"name", "client_type", "authorization_grant_type", "organization"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -80,7 +84,7 @@ func (c *ApplicationService) CreateApplication(data map[string]interface{}, para
 }
 
 // UpdateUser update an awx application.
-func (c *ApplicationService) UpdateApplication(id int, data map[string]interface{}, params map[string]string) (*Application, error) {
+func (c *awx) UpdateApplication(id int, data map[string]interface{}, params map[string]string) (*Application, error) {
 	result := new(Application)
 	endpoint := fmt.Sprintf("%s%d", applicationAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -101,7 +105,7 @@ func (c *ApplicationService) UpdateApplication(id int, data map[string]interface
 }
 
 // DeleteUser delete an awx application.
-func (c *ApplicationService) DeleteApplication(id int) (*Application, error) {
+func (c *awx) DeleteApplication(id int) (*Application, error) {
 	result := new(Application)
 	endpoint := fmt.Sprintf("%s%d", applicationAPIEndpoint, id)
 
