@@ -6,8 +6,13 @@ import (
 	"fmt"
 )
 
-type CredentialTypeService struct {
-	client *Client
+type CredentialTypeService interface {
+	ListCredentialTypes(params map[string]string) ([]*CredentialType,
+		*ListCredentialTypeResponse, error)
+	CreateCredentialType(data map[string]interface{}, params map[string]string) (*CredentialType, error)
+	GetCredentialTypeByID(id int, params map[string]string) (*CredentialType, error)
+	UpdateCredentialTypeByID(id int, data map[string]interface{}, params map[string]string) (*CredentialType, error)
+	DeleteCredentialTypeByID(id int, params map[string]string) error
 }
 
 type ListCredentialTypeResponse struct {
@@ -17,7 +22,7 @@ type ListCredentialTypeResponse struct {
 
 const credentialTypesAPIEndpoint = "/api/v2/credential_types/"
 
-func (cs *CredentialTypeService) ListCredentialTypes(params map[string]string) ([]*CredentialType,
+func (cs *awx) ListCredentialTypes(params map[string]string) ([]*CredentialType,
 	*ListCredentialTypeResponse, error) {
 	result := new(ListCredentialTypeResponse)
 	resp, err := cs.client.Requester.GetJSON(credentialTypesAPIEndpoint, result, params)
@@ -33,7 +38,7 @@ func (cs *CredentialTypeService) ListCredentialTypes(params map[string]string) (
 	return result.Results, result, nil
 }
 
-func (cs *CredentialTypeService) CreateCredentialType(data map[string]interface{}, params map[string]string) (*CredentialType, error) {
+func (cs *awx) CreateCredentialType(data map[string]interface{}, params map[string]string) (*CredentialType, error) {
 	result := new(CredentialType)
 	payload, err := json.Marshal(data)
 	if err != nil {
@@ -53,7 +58,7 @@ func (cs *CredentialTypeService) CreateCredentialType(data map[string]interface{
 	return result, nil
 }
 
-func (cs *CredentialTypeService) GetCredentialTypeByID(id int, params map[string]string) (*CredentialType, error) {
+func (cs *awx) GetCredentialTypeByID(id int, params map[string]string) (*CredentialType, error) {
 	result := new(CredentialType)
 	endpoint := fmt.Sprintf("%s%d", credentialTypesAPIEndpoint, id)
 	resp, err := cs.client.Requester.GetJSON(endpoint, result, params)
@@ -69,7 +74,7 @@ func (cs *CredentialTypeService) GetCredentialTypeByID(id int, params map[string
 	return result, nil
 }
 
-func (cs *CredentialTypeService) UpdateCredentialTypeByID(id int, data map[string]interface{}, params map[string]string) (*CredentialType, error) {
+func (cs *awx) UpdateCredentialTypeByID(id int, data map[string]interface{}, params map[string]string) (*CredentialType, error) {
 	result := new(CredentialType)
 	endpoint := fmt.Sprintf("%s%d", credentialTypesAPIEndpoint, id)
 
@@ -91,7 +96,7 @@ func (cs *CredentialTypeService) UpdateCredentialTypeByID(id int, data map[strin
 	return result, nil
 }
 
-func (cs *CredentialTypeService) DeleteCredentialTypeByID(id int, params map[string]string) error {
+func (cs *awx) DeleteCredentialTypeByID(id int, params map[string]string) error {
 	endpoint := fmt.Sprintf("%s%d", credentialTypesAPIEndpoint, id)
 	resp, err := cs.client.Requester.Delete(endpoint, nil, params)
 	if err != nil {

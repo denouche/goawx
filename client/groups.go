@@ -6,9 +6,12 @@ import (
 	"fmt"
 )
 
-// GroupService implements awx Groups apis.
-type GroupService struct {
-	client *Client
+type GroupService interface {
+	GetGroupByID(id int, params map[string]string) (*Group, error)
+	ListGroups(params map[string]string) ([]*Group, *ListGroupsResponse, error)
+	CreateGroup(data map[string]interface{}, params map[string]string) (*Group, error)
+	UpdateGroup(id int, data map[string]interface{}, params map[string]string) (*Group, error)
+	DeleteGroup(id int) (*Group, error)
 }
 
 // ListGroupsResponse represents `ListGroups` endpoint response.
@@ -20,7 +23,7 @@ type ListGroupsResponse struct {
 const groupsAPIEndpoint = "/api/v2/groups/"
 
 // GetGroupByID shows the details of a awx group.
-func (g *GroupService) GetGroupByID(id int, params map[string]string) (*Group, error) {
+func (g *awx) GetGroupByID(id int, params map[string]string) (*Group, error) {
 	result := new(Group)
 	endpoint := fmt.Sprintf("%s%d/", groupsAPIEndpoint, id)
 	resp, err := g.client.Requester.GetJSON(endpoint, result, params)
@@ -36,7 +39,7 @@ func (g *GroupService) GetGroupByID(id int, params map[string]string) (*Group, e
 }
 
 // ListGroups shows list of awx Groups.
-func (g *GroupService) ListGroups(params map[string]string) ([]*Group, *ListGroupsResponse, error) {
+func (g *awx) ListGroups(params map[string]string) ([]*Group, *ListGroupsResponse, error) {
 	result := new(ListGroupsResponse)
 	resp, err := g.client.Requester.GetJSON(groupsAPIEndpoint, result, params)
 	if err != nil {
@@ -51,7 +54,7 @@ func (g *GroupService) ListGroups(params map[string]string) ([]*Group, *ListGrou
 }
 
 // CreateGroup creates an awx Group.
-func (g *GroupService) CreateGroup(data map[string]interface{}, params map[string]string) (*Group, error) {
+func (g *awx) CreateGroup(data map[string]interface{}, params map[string]string) (*Group, error) {
 	mandatoryFields = []string{"name", "inventory"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -81,7 +84,7 @@ func (g *GroupService) CreateGroup(data map[string]interface{}, params map[strin
 }
 
 // UpdateGroup update an awx group
-func (g *GroupService) UpdateGroup(id int, data map[string]interface{}, params map[string]string) (*Group, error) {
+func (g *awx) UpdateGroup(id int, data map[string]interface{}, params map[string]string) (*Group, error) {
 	result := new(Group)
 	endpoint := fmt.Sprintf("%s%d", groupsAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -101,7 +104,7 @@ func (g *GroupService) UpdateGroup(id int, data map[string]interface{}, params m
 }
 
 // DeleteGroup delete an awx Group.
-func (g *GroupService) DeleteGroup(id int) (*Group, error) {
+func (g *awx) DeleteGroup(id int) (*Group, error) {
 	result := new(Group)
 	endpoint := fmt.Sprintf("%s%d", groupsAPIEndpoint, id)
 

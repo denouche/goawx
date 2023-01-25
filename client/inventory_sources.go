@@ -7,8 +7,13 @@ import (
 )
 
 // InventorySourcesService implements awx inventory sources apis.
-type InventorySourcesService struct {
-	client *Client
+type InventorySourcesService interface {
+	GetInventorySourceByID(id int, params map[string]string) (*InventorySource, error)
+	ListInventorySources(params map[string]string) ([]*InventorySource, *ListInventorySourcesResponse, error)
+	CreateInventorySource(data map[string]interface{}, params map[string]string) (*InventorySource, error)
+	UpdateInventorySource(id int, data map[string]interface{}, params map[string]string) (*InventorySource, error)
+	GetInventorySource(id int, params map[string]string) (*InventorySource, error)
+	DeleteInventorySource(id int) (*InventorySource, error)
 }
 
 // ListInventorySourcesResponse represents `ListInventorySources` endpoint response.
@@ -20,7 +25,7 @@ type ListInventorySourcesResponse struct {
 const inventorySourcesAPIEndpoint = "/api/v2/inventory_sources/"
 
 // GetInventorySourceByID shows the details of a awx inventroy sources.
-func (i *InventorySourcesService) GetInventorySourceByID(id int, params map[string]string) (*InventorySource, error) {
+func (i *awx) GetInventorySourceByID(id int, params map[string]string) (*InventorySource, error) {
 	result := new(InventorySource)
 	endpoint := fmt.Sprintf("%s%d/", inventorySourcesAPIEndpoint, id)
 	resp, err := i.client.Requester.GetJSON(endpoint, result, params)
@@ -36,7 +41,7 @@ func (i *InventorySourcesService) GetInventorySourceByID(id int, params map[stri
 }
 
 // ListInventorySources shows list of awx inventories.
-func (i *InventorySourcesService) ListInventorySources(params map[string]string) ([]*InventorySource, *ListInventorySourcesResponse, error) {
+func (i *awx) ListInventorySources(params map[string]string) ([]*InventorySource, *ListInventorySourcesResponse, error) {
 	result := new(ListInventorySourcesResponse)
 	resp, err := i.client.Requester.GetJSON(inventorySourcesAPIEndpoint, result, params)
 	if err != nil {
@@ -51,7 +56,7 @@ func (i *InventorySourcesService) ListInventorySources(params map[string]string)
 }
 
 // CreateInventorySource creates an awx InventorySource.
-func (i *InventorySourcesService) CreateInventorySource(data map[string]interface{}, params map[string]string) (*InventorySource, error) {
+func (i *awx) CreateInventorySource(data map[string]interface{}, params map[string]string) (*InventorySource, error) {
 	mandatoryFields = []string{"name", "inventory"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -81,7 +86,7 @@ func (i *InventorySourcesService) CreateInventorySource(data map[string]interfac
 }
 
 // UpdateInventorySource update an awx InventorySource
-func (i *InventorySourcesService) UpdateInventorySource(id int, data map[string]interface{}, params map[string]string) (*InventorySource, error) {
+func (i *awx) UpdateInventorySource(id int, data map[string]interface{}, params map[string]string) (*InventorySource, error) {
 	result := new(InventorySource)
 	endpoint := fmt.Sprintf("%s%d", inventorySourcesAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -101,7 +106,7 @@ func (i *InventorySourcesService) UpdateInventorySource(id int, data map[string]
 }
 
 // GetInventorySource retrives the InventorySource information from its ID or Name
-func (i *InventorySourcesService) GetInventorySource(id int, params map[string]string) (*InventorySource, error) {
+func (i *awx) GetInventorySource(id int, params map[string]string) (*InventorySource, error) {
 	endpoint := fmt.Sprintf("%s%d", inventorySourcesAPIEndpoint, id)
 	result := new(InventorySource)
 	resp, err := i.client.Requester.GetJSON(endpoint, result, map[string]string{})
@@ -117,7 +122,7 @@ func (i *InventorySourcesService) GetInventorySource(id int, params map[string]s
 }
 
 // DeleteInventorySource delete an InventorySource from AWX
-func (i *InventorySourcesService) DeleteInventorySource(id int) (*InventorySource, error) {
+func (i *awx) DeleteInventorySource(id int) (*InventorySource, error) {
 	result := new(InventorySource)
 	endpoint := fmt.Sprintf("%s%d", inventorySourcesAPIEndpoint, id)
 

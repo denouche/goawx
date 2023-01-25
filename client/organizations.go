@@ -8,8 +8,14 @@ import (
 )
 
 // OrganizationsService implements awx organizations apis.
-type OrganizationsService struct {
-	client *Client
+type OrganizationsService interface {
+	ListOrganizations(params map[string]string) ([]*Organization, error)
+	GetOrganizationsByID(id int, params map[string]string) (*Organization, error)
+	CreateOrganization(data map[string]interface{}, params map[string]string) (*Organization, error)
+	UpdateOrganization(id int, data map[string]interface{}, params map[string]string) (*Organization, error)
+	DeleteOrganization(id int) (*Organization, error)
+	DisAssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error)
+	AssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error)
 }
 
 // ListOrganizationsResponse represents `ListOrganizations` endpoint response.
@@ -21,8 +27,8 @@ type ListOrganizationsResponse struct {
 const organizationsAPIEndpoint = "/api/v2/organizations/"
 
 // ListOrganizations shows list of awx organizations.
-func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*Organization, error) {
-	results, err := p.getAllPages(organizationsAPIEndpoint, params)
+func (p *awx) ListOrganizations(params map[string]string) ([]*Organization, error) {
+	results, err := p.getOrganizationAllPages(organizationsAPIEndpoint, params)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +36,7 @@ func (p *OrganizationsService) ListOrganizations(params map[string]string) ([]*O
 }
 
 // GetOrganizationsByID shows the details of a Organization.
-func (p *OrganizationsService) GetOrganizationsByID(id int, params map[string]string) (*Organization, error) {
+func (p *awx) GetOrganizationsByID(id int, params map[string]string) (*Organization, error) {
 	result := new(Organization)
 	endpoint := fmt.Sprintf("%s%d/", organizationsAPIEndpoint, id)
 	resp, err := p.client.Requester.GetJSON(endpoint, result, params)
@@ -46,7 +52,7 @@ func (p *OrganizationsService) GetOrganizationsByID(id int, params map[string]st
 }
 
 // CreateOrganization creates an awx Organization.
-func (p *OrganizationsService) CreateOrganization(data map[string]interface{}, params map[string]string) (*Organization, error) {
+func (p *awx) CreateOrganization(data map[string]interface{}, params map[string]string) (*Organization, error) {
 	mandatoryFields = []string{"name"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -73,7 +79,7 @@ func (p *OrganizationsService) CreateOrganization(data map[string]interface{}, p
 }
 
 // UpdateOrganization update an awx Organization.
-func (p *OrganizationsService) UpdateOrganization(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+func (p *awx) UpdateOrganization(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
 	result := new(Organization)
 	endpoint := fmt.Sprintf("%s%d", organizationsAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -93,7 +99,7 @@ func (p *OrganizationsService) UpdateOrganization(id int, data map[string]interf
 }
 
 // DeleteOrganization delete an awx Organization.
-func (p *OrganizationsService) DeleteOrganization(id int) (*Organization, error) {
+func (p *awx) DeleteOrganization(id int) (*Organization, error) {
 	result := new(Organization)
 	endpoint := fmt.Sprintf("%s%d", organizationsAPIEndpoint, id)
 
@@ -110,7 +116,7 @@ func (p *OrganizationsService) DeleteOrganization(id int) (*Organization, error)
 }
 
 // DisAssociateGalaxyCredentials remove Credentials form an awx job template
-func (p *OrganizationsService) DisAssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+func (p *awx) DisAssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
 	result := new(Organization)
 	endpoint := fmt.Sprintf("%s%d/galaxy_credentials/", organizationsAPIEndpoint, id)
 	data["disassociate"] = true
@@ -137,7 +143,7 @@ func (p *OrganizationsService) DisAssociateGalaxyCredentials(id int, data map[st
 }
 
 // AssociateGalaxyCredentials adding credentials to Organization.
-func (p *OrganizationsService) AssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+func (p *awx) AssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
 	result := new(Organization)
 
 	endpoint := fmt.Sprintf("%s%d/galaxy_credentials/", organizationsAPIEndpoint, id)
@@ -166,7 +172,7 @@ func (p *OrganizationsService) AssociateGalaxyCredentials(id int, data map[strin
 
 // Must be replaced by a generic function
 // But upgrade to version go 1.18 before
-func (p *OrganizationsService) getAllPages(firstURL string, params map[string]string) ([]*Organization, error) {
+func (p *awx) getOrganizationAllPages(firstURL string, params map[string]string) ([]*Organization, error) {
 	results := make([]*Organization, 0)
 	nextURL := firstURL
 	for {

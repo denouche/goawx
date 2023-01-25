@@ -8,8 +8,15 @@ import (
 )
 
 // JobTemplateService implements awx job template apis.
-type JobTemplateService struct {
-	client *Client
+type JobTemplateService interface {
+	GetJobTemplateByID(id int, params map[string]string) (*JobTemplate, error)
+	ListJobTemplates(params map[string]string) ([]*JobTemplate, *ListJobTemplatesResponse, error)
+	Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error)
+	CreateJobTemplate(data map[string]interface{}, params map[string]string) (*JobTemplate, error)
+	UpdateJobTemplate(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error)
+	DeleteJobTemplate(id int) (*JobTemplate, error)
+	DisAssociateCredentials(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error)
+	AssociateCredentials(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error)
 }
 
 // ListJobTemplatesResponse represents `ListJobTemplates` endpoint response.
@@ -21,7 +28,7 @@ type ListJobTemplatesResponse struct {
 const jobTemplateAPIEndpoint = "/api/v2/job_templates/"
 
 // GetJobTemplateByID shows the details of a job template.
-func (jt *JobTemplateService) GetJobTemplateByID(id int, params map[string]string) (*JobTemplate, error) {
+func (jt *awx) GetJobTemplateByID(id int, params map[string]string) (*JobTemplate, error) {
 	result := new(JobTemplate)
 	endpoint := fmt.Sprintf("%s%d/", jobTemplateAPIEndpoint, id)
 	resp, err := jt.client.Requester.GetJSON(endpoint, result, params)
@@ -37,7 +44,7 @@ func (jt *JobTemplateService) GetJobTemplateByID(id int, params map[string]strin
 }
 
 // ListJobTemplates shows a list of job templates.
-func (jt *JobTemplateService) ListJobTemplates(params map[string]string) ([]*JobTemplate, *ListJobTemplatesResponse, error) {
+func (jt *awx) ListJobTemplates(params map[string]string) ([]*JobTemplate, *ListJobTemplatesResponse, error) {
 	result := new(ListJobTemplatesResponse)
 	resp, err := jt.client.Requester.GetJSON(jobTemplateAPIEndpoint, result, params)
 	if err != nil {
@@ -52,7 +59,7 @@ func (jt *JobTemplateService) ListJobTemplates(params map[string]string) ([]*Job
 }
 
 // Launch lauchs a job with the job template.
-func (jt *JobTemplateService) Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
+func (jt *awx) Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
 	result := new(JobLaunch)
 	endpoint := fmt.Sprintf("%s%d/launch/", jobTemplateAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -78,7 +85,7 @@ func (jt *JobTemplateService) Launch(id int, data map[string]interface{}, params
 }
 
 // CreateJobTemplate creates a job template
-func (jt *JobTemplateService) CreateJobTemplate(data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
+func (jt *awx) CreateJobTemplate(data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
 	result := new(JobTemplate)
 	mandatoryFields = []string{"name", "job_type", "inventory", "project"}
 	validate, status := ValidateParams(data, mandatoryFields)
@@ -102,7 +109,7 @@ func (jt *JobTemplateService) CreateJobTemplate(data map[string]interface{}, par
 }
 
 // UpdateJobTemplate updates a job template
-func (jt *JobTemplateService) UpdateJobTemplate(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
+func (jt *awx) UpdateJobTemplate(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
 	result := new(JobTemplate)
 	endpoint := fmt.Sprintf("%s%d", jobTemplateAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -121,7 +128,7 @@ func (jt *JobTemplateService) UpdateJobTemplate(id int, data map[string]interfac
 }
 
 // DeleteJobTemplate deletes a job template
-func (jt *JobTemplateService) DeleteJobTemplate(id int) (*JobTemplate, error) {
+func (jt *awx) DeleteJobTemplate(id int) (*JobTemplate, error) {
 	result := new(JobTemplate)
 	endpoint := fmt.Sprintf("%s%d", jobTemplateAPIEndpoint, id)
 
@@ -138,7 +145,7 @@ func (jt *JobTemplateService) DeleteJobTemplate(id int) (*JobTemplate, error) {
 }
 
 // DisAssociateCredentials remove Credentials form an awx job template
-func (jt *JobTemplateService) DisAssociateCredentials(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
+func (jt *awx) DisAssociateCredentials(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
 	result := new(JobTemplate)
 	endpoint := fmt.Sprintf("%s%d/credentials/", jobTemplateAPIEndpoint, id)
 	data["disassociate"] = true
@@ -165,7 +172,7 @@ func (jt *JobTemplateService) DisAssociateCredentials(id int, data map[string]in
 }
 
 // AssociateCredentials  adding credentials to JobTemplate.
-func (jt *JobTemplateService) AssociateCredentials(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
+func (jt *awx) AssociateCredentials(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error) {
 	result := new(JobTemplate)
 
 	endpoint := fmt.Sprintf("%s%d/credentials/", jobTemplateAPIEndpoint, id)

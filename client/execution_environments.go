@@ -6,9 +6,12 @@ import (
 	"fmt"
 )
 
-// ExecutionEnvironmentsService implements awx execution environments apis.
-type ExecutionEnvironmentsService struct {
-	client *Client
+type ExecutionEnvironmentsService interface {
+	ListExecutionEnvironments(params map[string]string) ([]*ExecutionEnvironment, *ListExecutionEnvironmentsResponse, error)
+	GetExecutionEnvironmentByID(id int, params map[string]string) (*ExecutionEnvironment, error)
+	CreateExecutionEnvironment(data map[string]interface{}, params map[string]string) (*ExecutionEnvironment, error)
+	UpdateExecutionEnvironment(id int, data map[string]interface{}, params map[string]string) (*ExecutionEnvironment, error)
+	DeleteExecutionEnvironment(id int) (*ExecutionEnvironment, error)
 }
 
 // ListExecutionEnvironmentsResponse represents `ListExecutionEnvironments` endpoint response.
@@ -20,7 +23,7 @@ type ListExecutionEnvironmentsResponse struct {
 const executionEnvironmentsAPIEndpoint = "/api/v2/execution_environments/"
 
 // ListExecutionEnvironments shows list of awx execution environments.
-func (p *ExecutionEnvironmentsService) ListExecutionEnvironments(params map[string]string) ([]*ExecutionEnvironment, *ListExecutionEnvironmentsResponse, error) {
+func (p *awx) ListExecutionEnvironments(params map[string]string) ([]*ExecutionEnvironment, *ListExecutionEnvironmentsResponse, error) {
 	result := new(ListExecutionEnvironmentsResponse)
 	resp, err := p.client.Requester.GetJSON(executionEnvironmentsAPIEndpoint, result, params)
 	if err != nil {
@@ -35,7 +38,7 @@ func (p *ExecutionEnvironmentsService) ListExecutionEnvironments(params map[stri
 }
 
 // GetExecutionEnvironmentByID shows the details of a ExecutionEnvironment.
-func (p *ExecutionEnvironmentsService) GetExecutionEnvironmentByID(id int, params map[string]string) (*ExecutionEnvironment, error) {
+func (p *awx) GetExecutionEnvironmentByID(id int, params map[string]string) (*ExecutionEnvironment, error) {
 	result := new(ExecutionEnvironment)
 	endpoint := fmt.Sprintf("%s%d/", executionEnvironmentsAPIEndpoint, id)
 	resp, err := p.client.Requester.GetJSON(endpoint, result, params)
@@ -51,7 +54,7 @@ func (p *ExecutionEnvironmentsService) GetExecutionEnvironmentByID(id int, param
 }
 
 // CreateExecutionEnvironment creates an awx ExecutionEnvironment.
-func (p *ExecutionEnvironmentsService) CreateExecutionEnvironment(data map[string]interface{}, params map[string]string) (*ExecutionEnvironment, error) {
+func (p *awx) CreateExecutionEnvironment(data map[string]interface{}, params map[string]string) (*ExecutionEnvironment, error) {
 	mandatoryFields = []string{"name", "image"}
 	validate, status := ValidateParams(data, mandatoryFields)
 
@@ -78,7 +81,7 @@ func (p *ExecutionEnvironmentsService) CreateExecutionEnvironment(data map[strin
 }
 
 // UpdateExecutionEnvironment update an awx ExecutionEnvironment.
-func (p *ExecutionEnvironmentsService) UpdateExecutionEnvironment(id int, data map[string]interface{}, params map[string]string) (*ExecutionEnvironment, error) {
+func (p *awx) UpdateExecutionEnvironment(id int, data map[string]interface{}, params map[string]string) (*ExecutionEnvironment, error) {
 	result := new(ExecutionEnvironment)
 	endpoint := fmt.Sprintf("%s%d", executionEnvironmentsAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -98,7 +101,7 @@ func (p *ExecutionEnvironmentsService) UpdateExecutionEnvironment(id int, data m
 }
 
 // DeleteExecutionEnvironment delete an awx ExecutionEnvironment.
-func (p *ExecutionEnvironmentsService) DeleteExecutionEnvironment(id int) (*ExecutionEnvironment, error) {
+func (p *awx) DeleteExecutionEnvironment(id int) (*ExecutionEnvironment, error) {
 	result := new(ExecutionEnvironment)
 	endpoint := fmt.Sprintf("%s%d", executionEnvironmentsAPIEndpoint, id)
 

@@ -9,11 +9,16 @@ import (
 const jobTemplateNotificationTemplatesAPIEndpoint = "/api/v2/job_templates/%d/notification_templates_%s/"
 
 // JobTemplateNotificationTemplatesService implements awx job template nodes apis.
-type JobTemplateNotificationTemplatesService struct {
-	client *Client
+type JobTemplateNotificationTemplatesService interface {
+	AssociateJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	AssociateJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	AssociateJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	DisassociateJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	DisassociateJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
+	DisassociateJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error)
 }
 
-func (jt *JobTemplateNotificationTemplatesService) associateJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
+func (jt *awx) associateJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
 	result := new(NotificationTemplate)
 
 	data := map[string]interface{}{
@@ -45,21 +50,21 @@ func (jt *JobTemplateNotificationTemplatesService) associateJobTemplateNotificat
 }
 
 // AssociateJobTemplateNotificationTemplatesError will associate an error notification_template for a job_template
-func (jt *JobTemplateNotificationTemplatesService) AssociateJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (jt *awx) AssociateJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return jt.associateJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "error")
 }
 
 // AssociateJobTemplateNotificationTemplatesSuccess will associate a success notification_template for a job_template
-func (jt *JobTemplateNotificationTemplatesService) AssociateJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (jt *awx) AssociateJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return jt.associateJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "success")
 }
 
 // AssociateJobTemplateNotificationTemplatesStarted will associate a started notification_template for a job_template
-func (jt *JobTemplateNotificationTemplatesService) AssociateJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (jt *awx) AssociateJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return jt.associateJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "started")
 }
 
-func (jt *JobTemplateNotificationTemplatesService) disassociateJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
+func (jt *awx) disassociateJobTemplateNotificationTemplatesForType(jobTemplateID int, notificationTemplateID int, typ string) (*NotificationTemplate, error) {
 	result := new(NotificationTemplate)
 
 	data := map[string]interface{}{
@@ -92,16 +97,16 @@ func (jt *JobTemplateNotificationTemplatesService) disassociateJobTemplateNotifi
 }
 
 // DisassociateJobTemplateNotificationTemplatesError will disassociate an error notification_template for a job_template
-func (jt *JobTemplateNotificationTemplatesService) DisassociateJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (jt *awx) DisassociateJobTemplateNotificationTemplatesError(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return jt.disassociateJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "error")
 }
 
 // DisassociateJobTemplateNotificationTemplatesSuccess will disassociate a success notification_template for a job_template
-func (jt *JobTemplateNotificationTemplatesService) DisassociateJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (jt *awx) DisassociateJobTemplateNotificationTemplatesSuccess(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return jt.disassociateJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "success")
 }
 
 // DisassociateJobTemplateNotificationTemplatesStarted will disassociate a started notification_template for a job_template
-func (jt *JobTemplateNotificationTemplatesService) DisassociateJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
+func (jt *awx) DisassociateJobTemplateNotificationTemplatesStarted(jobTemplateID int, notificationTemplateID int) (*NotificationTemplate, error) {
 	return jt.disassociateJobTemplateNotificationTemplatesForType(jobTemplateID, notificationTemplateID, "started")
 }
