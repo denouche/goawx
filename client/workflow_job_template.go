@@ -13,7 +13,7 @@ type WorkflowJobTemplateService interface {
 	CreateWorkflowJobTemplate(data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error)
 	UpdateWorkflowJobTemplate(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplate, error)
 	DeleteWorkflowJobTemplate(id int) (*WorkflowJobTemplate, error)
-	Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error)
+	LaunchWorkflow(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error)
 }
 
 // ListWorkflowJobTemplatesResponse represents `ListWorkflowJobTemplate` endpoint response.
@@ -116,7 +116,7 @@ func (jt *awx) DeleteWorkflowJobTemplate(id int) (*WorkflowJobTemplate, error) {
 }
 
 // Launch a job with the workflow job template.
-func (jt *awx) Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
+func (jt *awx) LaunchWorkflow(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
 	result := new(JobLaunch)
 	endpoint := fmt.Sprintf("%s%d/launch/", workflowJobTemplateAPIEndpoint, id)
 	payload, err := json.Marshal(data)

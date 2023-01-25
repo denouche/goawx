@@ -8,11 +8,11 @@ import (
 
 // SchedulesService implements awx projects apis.
 type SchedulesService interface {
-	List(params map[string]string) ([]*Schedule, *ListSchedulesResponse, error)
-	GetByID(id int, params map[string]string) (*Schedule, error)
-	Create(data map[string]interface{}, params map[string]string) (*Schedule, error)
-	Update(id int, data map[string]interface{}, params map[string]string) (*Schedule, error)
-	Delete(id int) (*Schedule, error)
+	ListSchedule(params map[string]string) ([]*Schedule, *ListSchedulesResponse, error)
+	GetScheduleByID(id int, params map[string]string) (*Schedule, error)
+	CreateSchedule(data map[string]interface{}, params map[string]string) (*Schedule, error)
+	UpdateSchedule(id int, data map[string]interface{}, params map[string]string) (*Schedule, error)
+	DeleteSchedule(id int) (*Schedule, error)
 }
 
 // ListSchedulesResponse represents `List` endpoint response.
@@ -38,7 +38,7 @@ func (s *awx) ListSchedule(params map[string]string) ([]*Schedule, *ListSchedule
 }
 
 // GetByID shows the details of a schedule.
-func (s *awx) GetByID(id int, params map[string]string) (*Schedule, error) {
+func (s *awx) GetScheduleByID(id int, params map[string]string) (*Schedule, error) {
 	result := new(Schedule)
 	endpoint := fmt.Sprintf("%s%d/", schedulesAPIEndpoint, id)
 	resp, err := s.client.Requester.GetJSON(endpoint, result, params)
@@ -81,7 +81,7 @@ func (s *awx) CreateSchedule(data map[string]interface{}, params map[string]stri
 }
 
 // Update update an awx schedule.
-func (s *awx) Update(id int, data map[string]interface{}, params map[string]string) (*Schedule, error) {
+func (s *awx) UpdateSchedule(id int, data map[string]interface{}, params map[string]string) (*Schedule, error) {
 	result := new(Schedule)
 	endpoint := fmt.Sprintf("%s%d", schedulesAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -101,7 +101,7 @@ func (s *awx) Update(id int, data map[string]interface{}, params map[string]stri
 }
 
 // Delete delete an awx schedule.
-func (s *awx) Delete(id int) (*Schedule, error) {
+func (s *awx) DeleteSchedule(id int) (*Schedule, error) {
 	result := new(Schedule)
 	endpoint := fmt.Sprintf("%s%d", schedulesAPIEndpoint, id)
 

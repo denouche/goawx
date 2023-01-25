@@ -9,13 +9,13 @@ import (
 
 // WorkflowJobTemplateNodeStepService implements awx job template nodes apis.
 type WorkflowJobTemplateNodeStepService interface {
-	ListWorkflowJobTemplateNodes(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error)
-	CreateWorkflowJobTemplateNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
+	ListWorkflowJobTemplateNodeSteps(id int, endpoint string, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error)
+	CreateWorkflowJobTemplateNodeStep(id int, endpoint string, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
 }
 
-// ListWorkflowJobTemplateNodes shows a list of job templates nodes.
-func (jt *awx) ListWorkflowJobTemplateNodes(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
-	workflowJobTemplateNodesActionEndpoint := fmt.Sprintf(jt.endpoint, id)
+// ListWorkflowJobTemplateNodeSteps shows a list of job templates nodes.
+func (jt *awx) ListWorkflowJobTemplateNodeSteps(id int, endpoint string, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
+	workflowJobTemplateNodesActionEndpoint := fmt.Sprintf(endpoint, id)
 	return fetchWorkflowJobTemplateNode(jt.client, params, workflowJobTemplateNodesActionEndpoint)
 }
 
@@ -57,7 +57,7 @@ func createWorkflowJobTemplateNode(client *Client, data map[string]interface{}, 
 }
 
 // CreateWorkflowJobTemplateNodeStep will be create a template node for a existing node
-func (jt *awx) CreateWorkflowJobTemplateNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
-	workflowJobTemplateNodesActionEndpoint := fmt.Sprintf(jt.endpoint, id)
+func (jt *awx) CreateWorkflowJobTemplateNodeStep(id int, endpoint string, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+	workflowJobTemplateNodesActionEndpoint := fmt.Sprintf(endpoint, id)
 	return createWorkflowJobTemplateNode(jt.client, data, params, workflowJobTemplateNodesActionEndpoint)
 }

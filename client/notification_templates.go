@@ -8,11 +8,11 @@ import (
 
 // NotificationTemplatesService implements awx projects apis.
 type NotificationTemplatesService interface {
-	List(params map[string]string) ([]*NotificationTemplate, *ListNotificationTemplatesResponse, error)
-	GetByID(id int, params map[string]string) (*NotificationTemplate, error)
-	Create(data map[string]interface{}, params map[string]string) (*NotificationTemplate, error)
-	Update(id int, data map[string]interface{}, params map[string]string) (*NotificationTemplate, error)
-	Delete(id int) (*NotificationTemplate, error)
+	ListNotificationTemplates(params map[string]string) ([]*NotificationTemplate, *ListNotificationTemplatesResponse, error)
+	GetNotificationTemplateByID(id int, params map[string]string) (*NotificationTemplate, error)
+	CreateNotificationTemplate(data map[string]interface{}, params map[string]string) (*NotificationTemplate, error)
+	UpdateNotificationTemplate(id int, data map[string]interface{}, params map[string]string) (*NotificationTemplate, error)
+	DeleteNotificationTemplate(id int) (*NotificationTemplate, error)
 }
 
 // ListNotificationTemplatesResponse represents `List` endpoint response.
@@ -23,7 +23,7 @@ type ListNotificationTemplatesResponse struct {
 
 const notificationTemplatesAPIEndpoint = "/api/v2/notification_templates/"
 
-func (s *awx) List(params map[string]string) ([]*NotificationTemplate, *ListNotificationTemplatesResponse, error) {
+func (s *awx) ListNotificationTemplates(params map[string]string) ([]*NotificationTemplate, *ListNotificationTemplatesResponse, error) {
 	result := new(ListNotificationTemplatesResponse)
 	resp, err := s.client.Requester.GetJSON(notificationTemplatesAPIEndpoint, result, params)
 	if err != nil {
@@ -38,7 +38,7 @@ func (s *awx) List(params map[string]string) ([]*NotificationTemplate, *ListNoti
 }
 
 // GetByID shows the details of a notification_template.
-func (s *awx) GetByID(id int, params map[string]string) (*NotificationTemplate, error) {
+func (s *awx) GetNotificationTemplateByID(id int, params map[string]string) (*NotificationTemplate, error) {
 	result := new(NotificationTemplate)
 	endpoint := fmt.Sprintf("%s%d/", notificationTemplatesAPIEndpoint, id)
 	resp, err := s.client.Requester.GetJSON(endpoint, result, params)
@@ -54,7 +54,7 @@ func (s *awx) GetByID(id int, params map[string]string) (*NotificationTemplate, 
 }
 
 // Create creates an awx notification_template.
-func (s *awx) Create(data map[string]interface{}, params map[string]string) (*NotificationTemplate, error) {
+func (s *awx) CreateNotificationTemplate(data map[string]interface{}, params map[string]string) (*NotificationTemplate, error) {
 	mandatoryFields = []string{"name", "organization", "notification_type"}
 	validate, status := ValidateParams(data, mandatoryFields)
 	if !status {
@@ -81,7 +81,7 @@ func (s *awx) Create(data map[string]interface{}, params map[string]string) (*No
 }
 
 // Update update an awx notification_template.
-func (s *awx) Update(id int, data map[string]interface{}, params map[string]string) (*NotificationTemplate, error) {
+func (s *awx) UpdateNotificationTemplate(id int, data map[string]interface{}, params map[string]string) (*NotificationTemplate, error) {
 	result := new(NotificationTemplate)
 	endpoint := fmt.Sprintf("%s%d", notificationTemplatesAPIEndpoint, id)
 	payload, err := json.Marshal(data)
@@ -101,7 +101,7 @@ func (s *awx) Update(id int, data map[string]interface{}, params map[string]stri
 }
 
 // Delete delete an awx notification_template.
-func (s *awx) Delete(id int) (*NotificationTemplate, error) {
+func (s *awx) DeleteNotificationTemplate(id int) (*NotificationTemplate, error) {
 	result := new(NotificationTemplate)
 	endpoint := fmt.Sprintf("%s%d", notificationTemplatesAPIEndpoint, id)
 

@@ -11,7 +11,7 @@ import (
 type JobTemplateService interface {
 	GetJobTemplateByID(id int, params map[string]string) (*JobTemplate, error)
 	ListJobTemplates(params map[string]string) ([]*JobTemplate, *ListJobTemplatesResponse, error)
-	Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error)
+	LaunchJob(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error)
 	CreateJobTemplate(data map[string]interface{}, params map[string]string) (*JobTemplate, error)
 	UpdateJobTemplate(id int, data map[string]interface{}, params map[string]string) (*JobTemplate, error)
 	DeleteJobTemplate(id int) (*JobTemplate, error)
@@ -59,7 +59,7 @@ func (jt *awx) ListJobTemplates(params map[string]string) ([]*JobTemplate, *List
 }
 
 // Launch lauchs a job with the job template.
-func (jt *awx) Launch(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
+func (jt *awx) LaunchJob(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
 	result := new(JobLaunch)
 	endpoint := fmt.Sprintf("%s%d/launch/", jobTemplateAPIEndpoint, id)
 	payload, err := json.Marshal(data)
