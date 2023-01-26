@@ -15,6 +15,7 @@ var (
 	awxHostname string
 	awxUsername string
 	awxPassword string
+	awxToken    string
 
 	awxClient AWX
 
@@ -26,7 +27,7 @@ var (
 				"password": "badpassword",
 			},
 			"name":         "credential_01",
-			"organization": 1,
+			"organization": 71,
 		},
 		params: map[string]string{},
 	},
@@ -38,20 +39,22 @@ func TestMain(m *testing.M) {
 	awxHostname = os.Getenv("GOAWX_HOSTNAME")
 	awxUsername = os.Getenv("GOAWX_USERNAME")
 	awxPassword = os.Getenv("GOAWX_PASSWORD")
+	awxToken = os.Getenv("GOAWX_TOKEN")
 
 	if awxHostname == "" {
 		log.Fatal("no AWX hostname provided")
 	}
 
-	if awxUsername == "" {
-		log.Fatal("no AWX username provided")
+	if (awxUsername == "" || awxPassword == "") && awxToken == "" {
+		log.Fatal("no Authentication provided")
 	}
 
-	if awxPassword == "" {
-		log.Fatal("no AWX password provided")
-	}
+	if awxToken != "" {
+		awxClient, err = NewAWXToken(awxHostname, awxToken, nil)
 
-	awxClient, err = NewAWX(awxHostname, awxUsername, awxPassword, nil)
+	} else {
+		awxClient, err = NewAWX(awxHostname, awxUsername, awxPassword, nil)
+	}
 	if err != nil {
 		panic(err)
 	}
