@@ -9,12 +9,40 @@ import (
 
 // WorkflowJobTemplateNodeStepService implements awx job template nodes apis.
 type WorkflowJobTemplateNodeStepService interface {
-	ListWorkflowJobTemplateNodeSteps(id int, endpoint string, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error)
-	CreateWorkflowJobTemplateNodeStep(id int, endpoint string, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
+	ListWorkflowJobTemplateSuccessNodeSteps(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error)
+	CreateWorkflowJobTemplateSuccessNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
+	ListWorkflowJobTemplateFailureNodeSteps(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error)
+	CreateWorkflowJobTemplateFailureNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
+	ListWorkflowJobTemplateAlwaysNodeSteps(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error)
+	CreateWorkflowJobTemplateAlwaysNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error)
+}
+
+func (jt *awx) ListWorkflowJobTemplateSuccessNodeSteps(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
+	return jt.listWorkflowJobTemplateNodeSteps(id, fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/success_nodes/"), params)
+}
+func (jt *awx) CreateWorkflowJobTemplateSuccessNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+	return jt.createWorkflowJobTemplateNodeStep(id, fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/success_nodes/"), data, params)
+
+}
+func (jt *awx) ListWorkflowJobTemplateFailureNodeSteps(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
+	return jt.listWorkflowJobTemplateNodeSteps(id, fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/failure_nodes/"), params)
+
+}
+func (jt *awx) CreateWorkflowJobTemplateFailureNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+	return jt.createWorkflowJobTemplateNodeStep(id, fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/failure_nodes/"), data, params)
+
+}
+func (jt *awx) ListWorkflowJobTemplateAlwaysNodeSteps(id int, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
+	return jt.listWorkflowJobTemplateNodeSteps(id, fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/always_nodes/"), params)
+
+}
+func (jt *awx) CreateWorkflowJobTemplateAlwaysNodeStep(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+	return jt.createWorkflowJobTemplateNodeStep(id, fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/always_nodes/"), data, params)
+
 }
 
 // ListWorkflowJobTemplateNodeSteps shows a list of job templates nodes.
-func (jt *awx) ListWorkflowJobTemplateNodeSteps(id int, endpoint string, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
+func (jt *awx) listWorkflowJobTemplateNodeSteps(id int, endpoint string, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
 	workflowJobTemplateNodesActionEndpoint := fmt.Sprintf(endpoint, id)
 	return fetchWorkflowJobTemplateNode(jt.client, params, workflowJobTemplateNodesActionEndpoint)
 }
@@ -57,7 +85,7 @@ func createWorkflowJobTemplateNode(client *Client, data map[string]interface{}, 
 }
 
 // CreateWorkflowJobTemplateNodeStep will be create a template node for a existing node
-func (jt *awx) CreateWorkflowJobTemplateNodeStep(id int, endpoint string, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+func (jt *awx) createWorkflowJobTemplateNodeStep(id int, endpoint string, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
 	workflowJobTemplateNodesActionEndpoint := fmt.Sprintf(endpoint, id)
 	return createWorkflowJobTemplateNode(jt.client, data, params, workflowJobTemplateNodesActionEndpoint)
 }
