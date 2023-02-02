@@ -20,7 +20,7 @@ const (
 
 // JobService implements awx job apis.
 type JobService struct {
-	client *Client
+	CrudImpl[Job]
 }
 
 // HostSummariesResponse represents `JobHostSummaries` endpoint response.
@@ -38,24 +38,6 @@ type JobEventsResponse struct {
 // CancelJobResponse represents `CancelJob` endpoint response.
 type CancelJobResponse struct {
 	Detail string `json:"detail"`
-}
-
-const jobAPIEndpoint = "/api/v2/jobs/"
-
-// GetJob shows the details of a job.
-func (j *JobService) GetJob(id int, params map[string]string) (*Job, error) {
-	result := new(Job)
-	endpoint := fmt.Sprintf("%s%d/", jobAPIEndpoint, id)
-	resp, err := j.client.Requester.GetJSON(endpoint, result, params)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := CheckResponse(resp); err != nil {
-		return nil, err
-	}
-
-	return result, nil
 }
 
 // CancelJob cancels a job.

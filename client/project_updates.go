@@ -9,8 +9,6 @@ type ProjectUpdatesService struct {
 	client *Client
 }
 
-const projectUpdatesAPIEndpoint = "/api/v2/project_updates/"
-
 // ProjectUpdateCancel cancel of awx projects update.
 func (p *ProjectUpdatesService) ProjectUpdateCancel(id int) (*ProjectUpdateCancel, error) {
 	result := new(ProjectUpdateCancel)

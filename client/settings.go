@@ -17,8 +17,6 @@ type ListSettingsResponse struct {
 	Results []*SettingSummary `json:"results"`
 }
 
-const settingsAPIEndpoint = "/api/v2/settings/"
-
 // ListSettings shows list of awx settings.
 func (p *SettingService) ListSettings(params map[string]string) ([]*SettingSummary, *ListSettingsResponse, error) {
 	result := new(ListSettingsResponse)

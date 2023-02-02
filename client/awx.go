@@ -13,27 +13,27 @@ var mandatoryFields []string
 type AWX struct {
 	client *Client
 
-	ApplicationService                              *ApplicationService
-	ExecutionEnvironmentsService                    *ExecutionEnvironmentsService
+	ApplicationService                              Crud[Application]
+	ExecutionEnvironmentsService                    Crud[ExecutionEnvironment]
 	PingService                                     *PingService
-	InventoriesService                              *InventoriesService
+	InventoriesService                              Crud[Inventory]
 	JobService                                      *JobService
 	JobTemplateService                              *JobTemplateService
 	JobTemplateNotificationTemplatesService         *JobTemplateNotificationTemplatesService
-	ProjectService                                  *ProjectService
+	ProjectService                                  Crud[Project]
 	ProjectUpdatesService                           *ProjectUpdatesService
 	UserService                                     *UserService
-	GroupService                                    *GroupService
-	HostService                                     *HostService
-	CredentialsService                              *CredentialsService
-	CredentialTypeService                           *CredentialTypeService
-	CredentialInputSourceService                    *CredentialInputSourceService
-	InventorySourcesService                         *InventorySourcesService
+	GroupService                                    Crud[Groups]
+	HostService                                     Crud[Host]
+	CredentialsService                              Crud[Credential]
+	CredentialTypeService                           Crud[CredentialType]
+	CredentialInputSourceService                    Crud[CredentialInputSource]
+	InventorySourcesService                         Crud[InventorySource]
 	InventoryGroupService                           *InventoryGroupService
-	InstanceGroupsService                           *InstanceGroupsService
-	NotificationTemplatesService                    *NotificationTemplatesService
+	InstanceGroupsService                           Crud[InstanceGroup]
+	NotificationTemplatesService                    Crud[NotificationTemplate]
 	OrganizationsService                            *OrganizationsService
-	ScheduleService                                 *SchedulesService
+	ScheduleService                                 Crud[Schedule]
 	SettingService                                  *SettingService
 	TeamService                                     *TeamService
 	WorkflowJobTemplateScheduleService              *WorkflowJobTemplateScheduleService
@@ -125,83 +125,116 @@ func newAWX(c *Client) *AWX {
 	return &AWX{
 		client: c,
 
-		ApplicationService: &ApplicationService{
-			client: c,
+		ApplicationService: CrudImpl[Application]{
+			client:   c,
+			endpoint: applicationAPIEndpoint,
 		},
-		ExecutionEnvironmentsService: &ExecutionEnvironmentsService{
-			client: c,
+		ExecutionEnvironmentsService: CrudImpl[ExecutionEnvironment]{
+			endpoint: executionEnvironmentsAPIEndpoint,
+			client:   c,
 		},
 		PingService: &PingService{
 			client: c,
 		},
-		InventoriesService: &InventoriesService{
-			client: c,
+		InventoriesService: CrudImpl[Inventory]{
+			endpoint: inventoriesAPIEndpoint,
+			client:   c,
 		},
 		JobService: &JobService{
-			client: c,
+			CrudImpl: CrudImpl[Job]{
+				client:   c,
+				endpoint: jobAPIEndpoint,
+			},
 		},
 		JobTemplateService: &JobTemplateService{
-			client: c,
+			CrudImpl: CrudImpl[JobTemplate]{
+				client:   c,
+				endpoint: jobTemplateAPIEndpoint,
+			},
 		},
 		JobTemplateNotificationTemplatesService: &JobTemplateNotificationTemplatesService{
 			client: c,
 		},
-		ProjectService: &ProjectService{
-			client: c,
+		ProjectService: CrudImpl[Project]{
+			endpoint: projectsAPIEndpoint,
+			client:   c,
 		},
 		ProjectUpdatesService: &ProjectUpdatesService{
 			client: c,
 		},
 		UserService: &UserService{
+			CrudImpl: CrudImpl[User]{
+				client:   c,
+				endpoint: usersAPIEndpoint,
+			},
+		},
+		GroupService: CrudImpl[Groups]{
+			endpoint: groupsAPIEndpoint,
+			client:   c,
+		},
+		HostService: CrudImpl[Host]{
 			client: c,
 		},
-		GroupService: &GroupService{
-			client: c,
+		CredentialsService: CrudImpl[Credential]{
+			endpoint: credentialsAPIEndpoint,
+			client:   c,
 		},
-		HostService: &HostService{
-			client: c,
+		CredentialTypeService: CrudImpl[CredentialType]{
+			endpoint: credentialTypesAPIEndpoint,
+			client:   c,
 		},
-		CredentialsService: &CredentialsService{
-			client: c,
+		CredentialInputSourceService: CrudImpl[CredentialInputSource]{
+			endpoint: credentialInputSourceAPIEndpoint,
+			client:   c,
 		},
-		CredentialTypeService: &CredentialTypeService{
-			client: c,
-		},
-		CredentialInputSourceService: &CredentialInputSourceService{
-			client: c,
-		},
-		InventorySourcesService: &InventorySourcesService{
-			client: c,
+		InventorySourcesService: CrudImpl[InventorySource]{
+			endpoint: inventorySourcesAPIEndpoint,
+			client:   c,
 		},
 		InventoryGroupService: &InventoryGroupService{
 			client: c,
 		},
-		InstanceGroupsService: &InstanceGroupsService{
-			client: c,
+		InstanceGroupsService: CrudImpl[InstanceGroup]{
+			endpoint: instanceGroupsAPIEndpoint,
+			client:   c,
 		},
-		NotificationTemplatesService: &NotificationTemplatesService{
-			client: c,
+		NotificationTemplatesService: CrudImpl[NotificationTemplate]{
+			endpoint: notificationTemplatesAPIEndpoint,
+			client:   c,
 		},
 		OrganizationsService: &OrganizationsService{
-			client: c,
+			CrudImpl: CrudImpl[Organization]{
+				client:   c,
+				endpoint: organizationsAPIEndpoint,
+			},
 		},
-		ScheduleService: &SchedulesService{
-			client: c,
+		ScheduleService: CrudImpl[Schedule]{
+			client:   c,
+			endpoint: schedulesAPIEndpoint,
 		},
 		SettingService: &SettingService{
 			client: c,
 		},
 		TeamService: &TeamService{
-			client: c,
+			CrudImpl: CrudImpl[Team]{
+				client:   c,
+				endpoint: teamsAPIEndpoint,
+			},
 		},
 		WorkflowJobTemplateScheduleService: &WorkflowJobTemplateScheduleService{
 			client: c,
 		},
 		WorkflowJobTemplateService: &WorkflowJobTemplateService{
-			client: c,
+			CrudImpl: CrudImpl[WorkflowJobTemplate]{
+				client:   c,
+				endpoint: workflowJobTemplateAPIEndpoint,
+			},
 		},
 		WorkflowJobTemplateNodeService: &WorkflowJobTemplateNodeService{
-			client: c,
+			CrudImpl: CrudImpl[WorkflowJobTemplateNode]{
+				client:   c,
+				endpoint: workflowJobTemplateNodeAPIEndpoint,
+			},
 		},
 		WorkflowJobTemplateNodeSuccessService: &WorkflowJobTemplateNodeStepService{
 			endpoint: fmt.Sprintf("%s%s", workflowJobTemplateNodeAPIEndpoint, "%d/success_nodes/"),

@@ -14,8 +14,8 @@ type WorkflowJobTemplateScheduleService struct {
 }
 
 // ListWorkflowJobTemplateSchedules shows a list of schedules for a given workflow_job_template
-func (jt *WorkflowJobTemplateScheduleService) ListWorkflowJobTemplateSchedules(id int, params map[string]string) ([]*Schedule, *ListSchedulesResponse, error) {
-	result := new(ListSchedulesResponse)
+func (jt *WorkflowJobTemplateScheduleService) ListWorkflowJobTemplateSchedules(id int, params map[string]string) ([]*Schedule, *ListResponse[Schedule], error) {
+	result := new(ListResponse[Schedule])
 	resp, err := jt.client.Requester.GetJSON(
 		fmt.Sprintf(workflowJobTemplateSchedulesAPIEndpoint, id),
 		result, params)

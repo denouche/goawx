@@ -10,8 +10,8 @@ type InventoryGroupService struct {
 }
 
 // ListInventoryGroups shows list of awx groups in some inventory.
-func (i *InventoryGroupService) ListInventoryGroups(id int, params map[string]string) ([]*Group, *ListGroupsResponse, error) {
-	result := new(ListGroupsResponse)
+func (i *InventoryGroupService) ListInventoryGroups(id int, params map[string]string) ([]*Group, *ListResponse[Group], error) {
+	result := new(ListResponse[Group])
 	endpoint := fmt.Sprintf("%s%d/groups/", inventoriesAPIEndpoint, id)
 	resp, err := i.client.Requester.GetJSON(endpoint, result, params)
 	if err != nil {

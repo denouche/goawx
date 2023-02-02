@@ -9,7 +9,7 @@ import (
 
 // TeamService implements awx teams apis.
 type TeamService struct {
-	client *Client
+	CrudImpl[Team]
 }
 
 // ListTeamsResponse represents `ListTeams` endpoint response.
@@ -31,23 +31,6 @@ type ListTeamObjectRolesResponse struct {
 type ListTeamUsersResponse struct {
 	Pagination
 	Results []*User `json:"results"`
-}
-
-const teamsAPIEndpoint = "/api/v2/teams/"
-
-// ListTeams shows list of awx teams.
-func (t *TeamService) ListTeams(params map[string]string) ([]*Team, *ListTeamsResponse, error) {
-	result := new(ListTeamsResponse)
-	resp, err := t.client.Requester.GetJSON(teamsAPIEndpoint, result, params)
-	if err != nil {
-		return nil, result, err
-	}
-
-	if err := CheckResponse(resp); err != nil {
-		return nil, result, err
-	}
-
-	return result.Results, result, nil
 }
 
 func (t *TeamService) ListTeamRoleEntitlements(id int, params map[string]string) ([]*ApplyRole, *ListTeamRolesResponse, error) {
@@ -174,72 +157,6 @@ func (t *TeamService) RemoveTeamUser(id int, data map[string]interface{}) error 
 	}
 
 	return nil
-}
-
-// GetTeamByID shows the details of a team.
-func (t *TeamService) GetTeamByID(id int, params map[string]string) (*Team, error) {
-	result := new(Team)
-	endpoint := fmt.Sprintf("%s%d/", teamsAPIEndpoint, id)
-	resp, err := t.client.Requester.GetJSON(endpoint, result, params)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := CheckResponse(resp); err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
-
-// CreateTeam creates an awx team.
-func (t *TeamService) CreateTeam(data map[string]interface{}, params map[string]string) (*Team, error) {
-	mandatoryFields = []string{"name", "organization"}
-	validate, status := ValidateParams(data, mandatoryFields)
-
-	if !status {
-		err := fmt.Errorf("Mandatory input arguments are absent: %s", validate)
-		return nil, err
-	}
-
-	result := new(Team)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return nil, err
-	}
-
-	// Add check if team exists and return proper error
-
-	resp, err := t.client.Requester.PostJSON(teamsAPIEndpoint, bytes.NewReader(payload), result, params)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := CheckResponse(resp); err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
-
-// UpdateTeam update an awx Team.
-func (t *TeamService) UpdateTeam(id int, data map[string]interface{}, params map[string]string) (*Team, error) {
-	result := new(Team)
-	endpoint := fmt.Sprintf("%s%d/", teamsAPIEndpoint, id)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := t.client.Requester.PatchJSON(endpoint, bytes.NewReader(payload), result, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := CheckResponse(resp); err != nil {
-		return nil, err
-	}
-
-	return result, nil
 }
 
 func (t *TeamService) UpdateTeamRoleEntitlement(id int, data map[string]interface{}, params map[string]string) (interface{}, error) {
