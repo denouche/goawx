@@ -860,14 +860,14 @@ type WorkflowJobTemplateNode struct {
 }
 
 type Schedule struct {
-	ID                 int         `json:"id"`
-	Name               string      `json:"name"`
-	Description        string      `json:"description"`
-	Rrule              string      `json:"rrule"`
-	Enabled            bool        `json:"enabled"`
-	UnifiedJobTemplate int         `json:"unified_job_template"`
-	Inventory          int         `json:"inventory"`
-	ExtraData          interface{} `json:"extra_data"`
+	ID                 int    `json:"id"`
+	Name               string `json:"name"`
+	Description        string `json:"description"`
+	Rrule              string `json:"rrule"`
+	Enabled            bool   `json:"enabled"`
+	UnifiedJobTemplate int    `json:"unified_job_template"`
+	Inventory          int    `json:"inventory"`
+	ExtraData          string `json:"extra_data"`
 }
 
 type NotificationTemplate struct {
