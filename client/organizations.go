@@ -109,12 +109,33 @@ func (p *OrganizationsService) DeleteOrganization(id int) (*Organization, error)
 	return result, nil
 }
 
-// DisAssociateGalaxyCredentials remove Credentials form an awx job template
+// DisAssociateGalaxyCredentials remove Credentials from an organization
 func (p *OrganizationsService) DisAssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+	return p.disAssociate(id, "galaxy_credentials", data, params)
+}
+
+// AssociateGalaxyCredentials adding credentials to Organization.
+func (p *OrganizationsService) AssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+	return p.associate(id, "galaxy_credential", data, params)
+}
+
+// DisAssociateInstanceGroups remove instance_groups from an organization
+func (p *OrganizationsService) DisAssociateInstanceGroups(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+	return p.disAssociate(id, "instance_groups", data, params)
+}
+
+// AssociateInstanceGroups adding instance_groups to Organization.
+func (p *OrganizationsService) AssociateInstanceGroups(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+	return p.associate(id, "instance_groups", data, params)
+}
+
+// Associate associate an element to Organization.
+func (p *OrganizationsService) associate(id int, typ string, data map[string]interface{}, params map[string]string) (*Organization, error) {
 	result := new(Organization)
-	endpoint := fmt.Sprintf("%s%d/galaxy_credentials/", organizationsAPIEndpoint, id)
-	data["disassociate"] = true
-	mandatoryFields = []string{"id", "disassociate"}
+
+	endpoint := fmt.Sprintf("%s%d/%s/", organizationsAPIEndpoint, id, typ)
+	data["associate"] = true
+	mandatoryFields = []string{"id"}
 	validate, status := ValidateParams(data, mandatoryFields)
 	if !status {
 		err := fmt.Errorf("mandatory input arguments are absent: %s", validate)
@@ -136,13 +157,12 @@ func (p *OrganizationsService) DisAssociateGalaxyCredentials(id int, data map[st
 	return result, nil
 }
 
-// AssociateGalaxyCredentials adding credentials to Organization.
-func (p *OrganizationsService) AssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
+// DisAssociate remove element from an organization
+func (p *OrganizationsService) disAssociate(id int, typ string, data map[string]interface{}, params map[string]string) (*Organization, error) {
 	result := new(Organization)
-
-	endpoint := fmt.Sprintf("%s%d/galaxy_credentials/", organizationsAPIEndpoint, id)
-	data["associate"] = true
-	mandatoryFields = []string{"id"}
+	endpoint := fmt.Sprintf("%s%d/%s/", organizationsAPIEndpoint, id, typ)
+	data["disassociate"] = true
+	mandatoryFields = []string{"id", "disassociate"}
 	validate, status := ValidateParams(data, mandatoryFields)
 	if !status {
 		err := fmt.Errorf("mandatory input arguments are absent: %s", validate)
