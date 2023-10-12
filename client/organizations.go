@@ -116,7 +116,7 @@ func (p *OrganizationsService) DisAssociateGalaxyCredentials(id int, data map[st
 
 // AssociateGalaxyCredentials adding credentials to Organization.
 func (p *OrganizationsService) AssociateGalaxyCredentials(id int, data map[string]interface{}, params map[string]string) (*Organization, error) {
-	return p.associate(id, "galaxy_credential", data, params)
+	return p.associate(id, "galaxy_credentials", data, params)
 }
 
 // DisAssociateInstanceGroups remove instance_groups from an organization
