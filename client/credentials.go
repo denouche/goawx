@@ -19,7 +19,7 @@ type ListCredentialsResponse struct {
 const credentialsAPIEndpoint = "/api/v2/credentials/"
 
 func (cs *CredentialsService) ListCredentials(params map[string]string) ([]*Credential, error) {
-	results, err := cs.getAllPages(organizationsAPIEndpoint, params)
+	results, err := cs.getAllPages(credentialsAPIEndpoint, params)
 	if err != nil {
 		return nil, err
 	}
