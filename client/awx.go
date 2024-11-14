@@ -18,6 +18,7 @@ type AWX struct {
 	PingService                                     *PingService
 	InventoriesService                              *InventoriesService
 	JobService                                      *JobService
+	WorkflowJobService                              *WorkflowJobService
 	JobTemplateService                              *JobTemplateService
 	JobTemplateNotificationTemplatesService         *JobTemplateNotificationTemplatesService
 	ProjectService                                  *ProjectService
@@ -139,6 +140,9 @@ func newAWX(c *Client) *AWX {
 			client: c,
 		},
 		JobService: &JobService{
+			client: c,
+		},
+		WorkflowJobService: &WorkflowJobService{
 			client: c,
 		},
 		JobTemplateService: &JobTemplateService{
