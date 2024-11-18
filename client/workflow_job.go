@@ -18,25 +18,19 @@ const (
 	WorkflowJobStatusCanceled   = "canceled"
 )
 
-// WorkflowJobService implements awx job apis.
+// WorkflowJobService implements awx workflow job apis.
 type WorkflowJobService struct {
 	client *Client
 }
 
-// JobEventsResponse represents `JobEvents` endpoint response.
-type WokflowJobEventsResponse struct {
-	Pagination
-	Results []JobEvent `json:"results"`
-}
-
-// CancelJobResponse represents `CancelJob` endpoint response.
+// CancelWorkflowJobResponse represents `CancelWorkflowJob` endpoint response.
 type CancelWorkflowJobResponse struct {
 	Detail string `json:"detail"`
 }
 
 const WorkflowJobAPIEndpoint = "/api/v2/workflow_jobs/"
 
-// GetWorkflowJob shows the details of a job.
+// GetWorkflowJob shows the details of a workflow job.
 func (j *WorkflowJobService) GetWorkflowJob(id int, params map[string]string) (*Job, error) {
 	result := new(Job)
 	endpoint := fmt.Sprintf("%s%d/", WorkflowJobAPIEndpoint, id)
@@ -52,9 +46,9 @@ func (j *WorkflowJobService) GetWorkflowJob(id int, params map[string]string) (*
 	return result, nil
 }
 
-// CancelJob cancels a job.
-func (j *WorkflowJobService) CancelWorkflowJob(id int, data map[string]interface{}, params map[string]string) (*CancelJobResponse, error) {
-	result := new(CancelJobResponse)
+// CancelWorkflowJob cancels a workflow job.
+func (j *WorkflowJobService) CancelWorkflowJob(id int, data map[string]interface{}, params map[string]string) (*CancelWorkflowJobResponse, error) {
+	result := new(CancelWorkflowJobResponse)
 	endpoint := fmt.Sprintf("%s%d/cancel/", WorkflowJobAPIEndpoint, id)
 	payload, err := json.Marshal(data)
 	if err != nil {
@@ -73,7 +67,7 @@ func (j *WorkflowJobService) CancelWorkflowJob(id int, data map[string]interface
 	return result, nil
 }
 
-// RelaunchJob relaunch a job.
+// RelaunchWorkflowJob relaunch a workflow job.
 func (j *WorkflowJobService) RelaunchWorkflowJob(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
 	result := new(JobLaunch)
 	endpoint := fmt.Sprintf("%s%d/relaunch/", WorkflowJobAPIEndpoint, id)
