@@ -843,6 +843,84 @@ type WorkflowJobTemplate struct {
 	WebhookCredential    interface{} `json:"webhook_credential"`
 }
 
+// WorkflowJobLaunch represents the awx api workflow job launch.
+type WorkflowJobLaunch struct {
+	ID                  int               `json:"id"`
+	Type                string            `json:"type"`
+	URL                 string            `json:"url"`
+	Related             *Related          `json:"related"`
+	SummaryFields       *Summary          `json:"summary_fields"`
+	Created             time.Time         `json:"created"`
+	Modified            time.Time         `json:"modified"`
+	Name                string            `json:"name"`
+	Description         string            `json:"description"`
+	UnifiedJobTemplate  int               `json:"unified_job_templates"`
+	LaunchType          string            `json:"launch_type"`
+	Status              string            `json:"status"`
+	Failed              bool              `json:"failed"`
+	Started             time.Time         `json:"started"`
+	Finished            time.Time         `json:"finished"`
+	CanceledOn          time.Time         `json:"canceled_on"`
+	Elapsed             float64           `json:"elapsed"`
+	JobArgs             string            `json:"job_args"`
+	JobCwd              string            `json:"job_cwd"`
+	JobEnv              map[string]string `json:"job_env"`
+	JobExplanation      string            `json:"job_explanation"`
+	ResultTraceback     string            `json:"result_traceback"`
+	WorkUnitID          string            `json:"work_unit_id"`
+	WorkflowJobTemplate int               `json:"workflow_job_template"`
+	ExtraVars           string            `json:"extra_vars"`
+	AllowSimultaneous   bool              `json:"allow_simultaneous"`
+	JobTemplate         int               `json:"job_template"`
+	IsSlicedJob         bool              `json:"is_sliced_job"`
+	Inventory           int               `json:"inventory"`
+	Limit               interface{}       `json:"limit"`
+	ScmBranch           interface{}       `json:"scm_branch"`
+	WebhookService      string            `json:"webhook_service"`
+	WebhookCredential   interface{}       `json:"webhook_credential"`
+	JobTags             string            `json:"job_tags"`
+	SkipTags            string            `json:"skip_tags"`
+}
+
+// WorkflowJob represents the awx api workflow job.
+type WorkflowJob struct {
+	ID                  int               `json:"id"`
+	Type                string            `json:"type"`
+	URL                 string            `json:"url"`
+	Related             *Related          `json:"related"`
+	SummaryFields       *Summary          `json:"summary_fields"`
+	Created             time.Time         `json:"created"`
+	Modified            time.Time         `json:"modified"`
+	Name                string            `json:"name"`
+	Description         string            `json:"description"`
+	UnifiedJobTemplate  int               `json:"unified_job_templates"`
+	LaunchType          string            `json:"launch_type"`
+	Status              string            `json:"status"`
+	Failed              bool              `json:"failed"`
+	Started             time.Time         `json:"started"`
+	Finished            time.Time         `json:"finished"`
+	CanceledOn          time.Time         `json:"canceled_on"`
+	Elapsed             float64           `json:"elapsed"`
+	JobArgs             string            `json:"job_args"`
+	JobCwd              string            `json:"job_cwd"`
+	JobEnv              map[string]string `json:"job_env"`
+	JobExplanation      string            `json:"job_explanation"`
+	ResultTraceback     string            `json:"result_traceback"`
+	WorkUnitID          string            `json:"work_unit_id"`
+	WorkflowJobTemplate int               `json:"workflow_job_template"`
+	ExtraVars           string            `json:"extra_vars"`
+	AllowSimultaneous   bool              `json:"allow_simultaneous"`
+	JobTemplate         int               `json:"job_template"`
+	IsSlicedJob         bool              `json:"is_sliced_job"`
+	Inventory           int               `json:"inventory"`
+	Limit               interface{}       `json:"limit"`
+	ScmBranch           interface{}       `json:"scm_branch"`
+	WebhookService      string            `json:"webhook_service"`
+	WebhookCredential   interface{}       `json:"webhook_credential"`
+	JobTags             string            `json:"job_tags"`
+	SkipTags            string            `json:"skip_tags"`
+}
+
 type WorkflowJobTemplateNode struct {
 	ID                     int       `json:"id"`
 	Type                   string    `json:"type"`

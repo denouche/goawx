@@ -31,8 +31,8 @@ type CancelWorkflowJobResponse struct {
 const WorkflowJobAPIEndpoint = "/api/v2/workflow_jobs/"
 
 // GetWorkflowJob shows the details of a workflow job.
-func (j *WorkflowJobService) GetWorkflowJob(id int, params map[string]string) (*Job, error) {
-	result := new(Job)
+func (j *WorkflowJobService) GetWorkflowJob(id int, params map[string]string) (*WorkflowJob, error) {
+	result := new(WorkflowJob)
 	endpoint := fmt.Sprintf("%s%d/", WorkflowJobAPIEndpoint, id)
 	resp, err := j.client.Requester.GetJSON(endpoint, result, params)
 	if err != nil {
@@ -68,8 +68,8 @@ func (j *WorkflowJobService) CancelWorkflowJob(id int, data map[string]interface
 }
 
 // RelaunchWorkflowJob relaunch a workflow job.
-func (j *WorkflowJobService) RelaunchWorkflowJob(id int, data map[string]interface{}, params map[string]string) (*JobLaunch, error) {
-	result := new(JobLaunch)
+func (j *WorkflowJobService) RelaunchWorkflowJob(id int, data map[string]interface{}, params map[string]string) (*WorkflowJobLaunch, error) {
+	result := new(WorkflowJobLaunch)
 	endpoint := fmt.Sprintf("%s%d/relaunch/", WorkflowJobAPIEndpoint, id)
 	payload, err := json.Marshal(data)
 	if err != nil {
