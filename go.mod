@@ -1,3 +1,2 @@
-module github.com/denouche/goawx
-
-go 1.20
+module github.com/afall13/goawx
+go 1.23.4
